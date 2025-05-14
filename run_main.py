@@ -263,8 +263,26 @@ for ii in range(args.itr):
         else:
             accelerator.print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
 
-accelerator.wait_for_everyone()
-if accelerator.is_local_main_process:
-    path = './checkpoints'  # unique checkpoint saving path
-    del_files(path)  # delete checkpoint files
-    accelerator.print('success delete checkpoints')
+    # Added model saving code here
+    accelerator.wait_for_everyone()
+    if accelerator.is_local_main_process:
+        # Create models directory if it doesn't exist
+        models_path = './trained_models'
+        if not os.path.exists(models_path):
+            os.makedirs(models_path)
+        
+        # Create a descriptive model name
+        model_name = f"{args.model}_{args.model_id}.pth"
+        model_path = os.path.join(models_path, model_name)
+        
+        # Save model state dict
+        unwrapped_model = accelerator.unwrap_model(model)
+        torch.save(unwrapped_model.state_dict(), model_path)
+        accelerator.print(f'Model saved to {model_path}')
+
+    # Existing cleanup code
+    accelerator.wait_for_everyone()
+    if accelerator.is_local_main_process:
+        path = './checkpoints'  # unique checkpoint saving path
+        del_files(path)  # delete checkpoint files
+        accelerator.print('success delete checkpoints')
