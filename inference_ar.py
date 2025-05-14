@@ -155,13 +155,14 @@ def main():
     model = load_model_for_inference(args.model_path, args, device)
     model = model.to(torch.bfloat16)
 
-    # Initialize results DataFrame
+    # Initialize results DataFrame with prediction columns
     results_df = df.copy()
-    results_df['close_predicted'] = np.nan
+    for i in range(1, args.pred_len + 1):
+        results_df[f'close_predicted_{i}'] = np.nan
 
     # Start from seq_len'th datapoint
-    for i in range(args.seq_len, len(df) - args.pred_len + 1):
-        # Get sequence for prediction
+    for i in range(args.seq_len, len(df)):
+        # Get sequence for prediction (using previous seq_len rows)
         seq_data = df.iloc[i-args.seq_len:i].copy()
         seq_timestamps = seq_data['timestamp'].tolist()
 
@@ -200,14 +201,13 @@ def main():
         predictions = predictions.to(torch.float32).cpu().numpy().squeeze()
         predictions = scaler.inverse_transform(predictions)
 
-        # Store predictions for the next 96 timestamps
+        # Store predictions in the current row
         for j in range(args.pred_len):
-            if i + j < len(results_df):  # Ensure we don't exceed DataFrame length
-                results_df.loc[i + j, 'close_predicted'] = predictions[j, 1]  # Index 1 for close price
+            results_df.loc[i, f'close_predicted_{j+1}'] = predictions[j, 1]  # Index 1 for close price
 
         # Print progress
         if i % 100 == 0:
-            print(f"Processed {i}/{len(df) - args.pred_len + 1} datapoints")
+            print(f"Processed {i}/{len(df)} datapoints")
 
     # Save results
     results_df.to_csv(args.output_path, index=False)

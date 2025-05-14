@@ -91,7 +91,7 @@ pip install -r requirements.txt
 ```bash
 bash ./scripts/TimeLLM_Cryptex.sh
 ```
-4. Trained models are saved to ```./trained_models```
+4. Trained models are saved to ```./trained_models```.
 
 ### Key hyperparameters
 - **seq_len:** Input sequence length.
@@ -110,7 +110,7 @@ Please refer to `run_main.py` for more detailed descriptions of each hyperparame
 ```bash
 bash ./scripts/inference.sh
 ```
-Specify:
+Inside the script, specify:
 - **model_path:** Path to the trained model.
 - **data_path:** Path to the dataset.
 - **model_id:** Model ID given during training.
@@ -122,15 +122,21 @@ This script outputs predictions to terminal.
 ```bash
 bash ./scripts/inference_ar.sh
 ```
+Inside the script, also specify:
+- **output_path:** Output file name in the following format: `./predictions/<filename>.csv`
+
 
 This script autoregressively generates multi-step forecasts and saves output CSV in `./predictions` with the following format:
 ```
 timestamp | open | close | high | low | volume | close_predicted_1 | ... | close_predicted_n
 ```
-Where ```n``` is the prediction length ```pred_len```.
+Where ```n``` is the prediction length ```pred_len```. For example, with `seq_len=24` and `pred_len=6`:
+- Row 24 will contain 6 future predictions made using rows 0-23
+- Row 25 will contain 6 future predictions made using rows 1-24
+- Row 26 will contain 6 future predictions made using rows 2-25
 
-Additionally specify:
-- **output_path:** Output file name in the following format ```./predictions/<filename>.csv```
+And so on...
+
 
 
 ## Acknowledgments
