@@ -97,6 +97,7 @@ parser.add_argument('--pct_start', type=float, default=0.2, help='pct_start')
 parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 parser.add_argument('--llm_layers', type=int, default=6)
 parser.add_argument('--percent', type=int, default=100)
+parser.add_argument('--models_dir', default='./trained_models', help='directory to save trained models')
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
@@ -267,7 +268,7 @@ for ii in range(args.itr):
     accelerator.wait_for_everyone()
     if accelerator.is_local_main_process:
         # Create models directory if it doesn't exist
-        models_path = './trained_models'
+        models_path = args.models_dir
         if not os.path.exists(models_path):
             os.makedirs(models_path)
         
