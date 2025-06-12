@@ -48,7 +48,8 @@ def launch_experiment(args):
         'root_path': './dataset/cryptex/',
         'target': 'close',
         'batch_size': '24',
-        'model': 'TimeLLM'
+        'model': 'TimeLLM',
+        'models_dir': './trained_models'
     }
     
     # Generate dynamic parameters
@@ -87,7 +88,8 @@ def launch_experiment(args):
         '--batch_size', static_config['batch_size'],
         '--learning_rate', static_config['learning_rate'],
         '--llm_layers', str(args.llm_layers),
-        '--model', static_config['model']
+        '--model', static_config['model'],
+        '--models_dir', static_config['models_dir']
     ]
     
     # Add patch_len and stride for short_term_forecast
