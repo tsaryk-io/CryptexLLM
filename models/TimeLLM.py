@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from transformers import LlamaConfig, LlamaModel, LlamaTokenizer, GPT2Config, GPT2Model, GPT2Tokenizer, BertConfig, \
-    BertModel, BertTokenizer
+    BertModel, BertTokenizer, AutoConfig, AutoModel, AutoTokenizer, AutoModelForCausalLM
 from layers.Embed import PatchEmbedding
 import transformers
 from layers.StandardNorm import Normalize
@@ -40,119 +40,93 @@ class Model(nn.Module):
         self.patch_len = configs.patch_len
         self.stride = configs.stride
 
-        if configs.llm_model == 'LLAMA':
-            # self.llama_config = LlamaConfig.from_pretrained('/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/')
-            self.llama_config = LlamaConfig.from_pretrained('huggyllama/llama-7b')
-            self.llama_config.num_hidden_layers = configs.llm_layers
-            self.llama_config.output_attentions = True
-            self.llama_config.output_hidden_states = True
-            try:
-                self.llm_model = LlamaModel.from_pretrained(
-                    # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/",
-                    'huggyllama/llama-7b',
-                    trust_remote_code=True,
-                    local_files_only=True,
-                    config=self.llama_config,
-                    # load_in_4bit=True
-                )
-            except EnvironmentError:  # downloads model from HF is not already done
-                print("Local model files not found. Attempting to download...")
-                self.llm_model = LlamaModel.from_pretrained(
-                    # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/",
-                    'huggyllama/llama-7b',
-                    trust_remote_code=True,
-                    local_files_only=False,
-                    config=self.llama_config,
-                    # load_in_4bit=True
-                )
-            try:
-                self.tokenizer = LlamaTokenizer.from_pretrained(
-                    # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/tokenizer.model",
-                    'huggyllama/llama-7b',
-                    trust_remote_code=True,
-                    local_files_only=True
-                )
-            except EnvironmentError:  # downloads the tokenizer from HF if not already done
-                print("Local tokenizer files not found. Atempting to download them..")
-                self.tokenizer = LlamaTokenizer.from_pretrained(
-                    # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/tokenizer.model",
-                    'huggyllama/llama-7b',
-                    trust_remote_code=True,
-                    local_files_only=False
-                )
-        elif configs.llm_model == 'GPT2':
-            self.gpt2_config = GPT2Config.from_pretrained('openai-community/gpt2')
+        # Define model configurations
+        self.model_configs = {
+            'LLAMA': {
+                'config_class': LlamaConfig,
+                'model_class': LlamaModel,
+                'tokenizer_class': LlamaTokenizer,
+                'model_name': 'huggyllama/llama-7b'
+            },
+            'GPT2': {
+                'config_class': GPT2Config,
+                'model_class': GPT2Model,
+                'tokenizer_class': GPT2Tokenizer,
+                'model_name': 'openai-community/gpt2'
+            },
+            'BERT': {
+                'config_class': BertConfig,
+                'model_class': BertModel,
+                'tokenizer_class': BertTokenizer,
+                'model_name': 'google-bert/bert-base-uncased'
+            },
+            'DEEPSEEK': {
+                'config_class': AutoConfig,
+                'model_class': AutoModel,
+                'tokenizer_class': AutoTokenizer,
+                'model_name': 'deepseek-ai/DeepSeek-R1-Distill-Llama-8B'
+            },
+            'QWEN': {
+                'config_class': AutoConfig,
+                'model_class': AutoModel,
+                'tokenizer_class': AutoTokenizer,
+                'model_name': 'Qwen/Qwen3-8B'
+            },
+            'MISTRAL': {
+                'config_class': AutoConfig,
+                'model_class': AutoModel,
+                'tokenizer_class': AutoTokenizer,
+                'model_name': 'mistralai/Mistral-7B-v0.1'
+            }
+            # Add new models here
+        }
 
-            self.gpt2_config.num_hidden_layers = configs.llm_layers
-            self.gpt2_config.output_attentions = True
-            self.gpt2_config.output_hidden_states = True
-            try:
-                self.llm_model = GPT2Model.from_pretrained(
-                    'openai-community/gpt2',
-                    trust_remote_code=True,
-                    local_files_only=True,
-                    config=self.gpt2_config,
-                )
-            except EnvironmentError:  # downloads model from HF is not already done
-                print("Local model files not found. Attempting to download...")
-                self.llm_model = GPT2Model.from_pretrained(
-                    'openai-community/gpt2',
-                    trust_remote_code=True,
-                    local_files_only=False,
-                    config=self.gpt2_config,
-                )
+        if configs.llm_model not in self.model_configs:
+            raise Exception(f'LLM model {configs.llm_model} is not defined. Available models: {list(self.model_configs.keys())}')
 
-            try:
-                self.tokenizer = GPT2Tokenizer.from_pretrained(
-                    'openai-community/gpt2',
-                    trust_remote_code=True,
-                    local_files_only=True
-                )
-            except EnvironmentError:  # downloads the tokenizer from HF if not already done
-                print("Local tokenizer files not found. Atempting to download them..")
-                self.tokenizer = GPT2Tokenizer.from_pretrained(
-                    'openai-community/gpt2',
-                    trust_remote_code=True,
-                    local_files_only=False
-                )
-        elif configs.llm_model == 'BERT':
-            self.bert_config = BertConfig.from_pretrained('google-bert/bert-base-uncased')
+        # Get model configuration
+        model_config = self.model_configs[configs.llm_model]
+        
+        # Initialize config
+        self.llm_config = model_config['config_class'].from_pretrained(model_config['model_name'], trust_remote_code=True)
+        self.llm_config.num_hidden_layers = configs.llm_layers
+        self.llm_config.output_attentions = True
+        self.llm_config.output_hidden_states = True
 
-            self.bert_config.num_hidden_layers = configs.llm_layers
-            self.bert_config.output_attentions = True
-            self.bert_config.output_hidden_states = True
-            try:
-                self.llm_model = BertModel.from_pretrained(
-                    'google-bert/bert-base-uncased',
-                    trust_remote_code=True,
-                    local_files_only=True,
-                    config=self.bert_config,
-                )
-            except EnvironmentError:  # downloads model from HF is not already done
-                print("Local model files not found. Attempting to download...")
-                self.llm_model = BertModel.from_pretrained(
-                    'google-bert/bert-base-uncased',
-                    trust_remote_code=True,
-                    local_files_only=False,
-                    config=self.bert_config,
-                )
+        # Initialize model
+        try:
+            self.llm_model = model_config['model_class'].from_pretrained(
+                model_config['model_name'],
+                trust_remote_code=True,
+                local_files_only=True,
+                config=self.llm_config
+            )
+        except Exception as e:
+            print(f"Error loading model {configs.llm_model}: {str(e)}")
+            print("Attempting to download...")
+            self.llm_model = model_config['model_class'].from_pretrained(
+                model_config['model_name'],
+                trust_remote_code=True,
+                local_files_only=False,
+                config=self.llm_config
+            )
 
-            try:
-                self.tokenizer = BertTokenizer.from_pretrained(
-                    'google-bert/bert-base-uncased',
-                    trust_remote_code=True,
-                    local_files_only=True
-                )
-            except EnvironmentError:  # downloads the tokenizer from HF if not already done
-                print("Local tokenizer files not found. Atempting to download them..")
-                self.tokenizer = BertTokenizer.from_pretrained(
-                    'google-bert/bert-base-uncased',
-                    trust_remote_code=True,
-                    local_files_only=False
-                )
-        else:
-            raise Exception('LLM model is not defined')
-
+        # Initialize tokenizer
+        try:
+            self.tokenizer = model_config['tokenizer_class'].from_pretrained(
+                model_config['model_name'],
+                trust_remote_code=True,
+                local_files_only=True,
+                config=self.llm_config
+            )
+        except Exception as e:
+            print(f"Error loading tokenizer for {configs.llm_model}: {str(e)}")
+            print("Attempting to download...")
+            self.tokenizer = model_config['tokenizer_class'].from_pretrained(
+                model_config['model_name'],
+                trust_remote_code=True,
+                local_files_only=False
+            )
         if self.tokenizer.eos_token:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         else:
@@ -175,7 +149,7 @@ class Model(nn.Module):
 
         self.word_embeddings = self.llm_model.get_input_embeddings().weight
         self.vocab_size = self.word_embeddings.shape[0]
-        self.num_tokens = 1000
+        self.num_tokens = configs.num_tokens
         self.mapping_layer = nn.Linear(self.vocab_size, self.num_tokens)
 
         self.reprogramming_layer = ReprogrammingLayer(configs.d_model, configs.n_heads, self.d_ff, self.d_llm)

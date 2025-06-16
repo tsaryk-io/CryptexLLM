@@ -199,6 +199,9 @@ def main():
 
         # Inverse transform predictions
         predictions = predictions.to(torch.float32).cpu().numpy().squeeze()
+        # Reshape predictions to 2D array if pred_len is 1
+        if args.pred_len == 1:
+            predictions = predictions.reshape(1, -1)
         predictions = scaler.inverse_transform(predictions)
 
         # Store predictions in the current row

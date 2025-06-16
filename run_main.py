@@ -13,6 +13,8 @@ import time
 import random
 import numpy as np
 import os
+import csv
+from datetime import datetime
 
 os.environ['CURL_CA_BUNDLE'] = ''
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
@@ -98,11 +100,67 @@ parser.add_argument('--use_amp', action='store_true', help='use automatic mixed 
 parser.add_argument('--llm_layers', type=int, default=6)
 parser.add_argument('--percent', type=int, default=100)
 parser.add_argument('--models_dir', default='./trained_models', help='directory to save trained models')
+parser.add_argument('--num_tokens', type=int, default=1000, help='number of tokens for mapping layer')
+
+def log_experiment_results(args, start_time, end_time, final_mse, final_mae, status='completed'):
+    """Log experiment results to CSV file"""
+    # Determine granularity from data_path
+    granularity_map = {
+        'candlesticks-h.csv': 'hourly',
+        'candlesticks-Min.csv': 'minute', 
+        'candlesticks-D.csv': 'daily'
+    }
+    granularity = granularity_map.get(args.data_path, 'unknown')
+    
+    # Calculate duration
+    duration = end_time - start_time
+    
+    # Find the launch script directory (go up from current directory)
+    # Assuming run_main.py is in the same directory as launch_experiment.py
+    csv_file = 'experiment_results.csv'
+    
+    # Check if file exists to determine if we need to write headers
+    file_exists = os.path.exists(csv_file)
+    
+    try:
+        with open(csv_file, 'a', newline='') as f:
+            writer = csv.writer(f)
+            
+            # Write headers if file is new
+            if not file_exists:
+                headers = [
+                    'timestamp', 'model_id', 'task_name', 'granularity', 'features',
+                    'seq_len', 'pred_len', 'llm_model', 'llm_layers', 'num_tokens',
+                    'duration_seconds', 'mse', 'mae', 'status'
+                ]
+                writer.writerow(headers)
+            
+            # Write the results
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            row = [
+                timestamp, args.model_id, args.task_name, granularity, args.features,
+                args.seq_len, args.pred_len, args.llm_model, args.llm_layers, args.num_tokens,
+                duration, final_mse, final_mae, status
+            ]
+            writer.writerow(row)
+            
+        print(f"\nResults logged to: {os.path.abspath(csv_file)}")
+        print(f"Duration: {duration:.2f} seconds ({duration/60:.2f} minutes)")
+        if final_mse is not None:
+            print(f"Final MSE: {final_mse:.6f}")
+        if final_mae is not None:
+            print(f"Final MAE: {final_mae:.6f}")
+            
+    except Exception as e:
+        print(f"Warning: Failed to log results to CSV: {e}")
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
 deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin)
+
+# Record overall start time
+overall_start_time = time.time()
 
 for ii in range(args.itr):
     # setting record of experiments
@@ -170,6 +228,10 @@ for ii in range(args.itr):
 
     if args.use_amp:
         scaler = torch.cuda.amp.GradScaler()
+
+    # Variables to track final metrics
+    final_test_mse = None
+    final_test_mae = None
 
     for epoch in range(args.train_epochs):
         iter_count = 0
@@ -242,6 +304,11 @@ for ii in range(args.itr):
         train_loss = np.average(train_loss)
         vali_loss, vali_mae_loss = vali(args, accelerator, model, vali_data, vali_loader, criterion, mae_metric)
         test_loss, test_mae_loss = vali(args, accelerator, model, test_data, test_loader, criterion, mae_metric)
+        
+        # Store the final test metrics (will be overwritten each epoch, so final values are from last epoch)
+        final_test_mse = test_loss
+        final_test_mae = test_mae_loss
+        
         accelerator.print(
             "Epoch: {0} | Train Loss: {1:.7f} Vali Loss: {2:.7f} Test Loss: {3:.7f} MAE Loss: {4:.7f}".format(
                 epoch + 1, train_loss, vali_loss, test_loss, test_mae_loss))
@@ -287,3 +354,9 @@ for ii in range(args.itr):
         path = './checkpoints'  # unique checkpoint saving path
         del_files(path)  # delete checkpoint files
         accelerator.print('success delete checkpoints')
+
+# Log the final results after all iterations complete
+overall_end_time = time.time()
+if accelerator.is_local_main_process:
+    log_experiment_results(args, overall_start_time, overall_end_time, 
+                          final_test_mse, final_test_mae, 'completed')

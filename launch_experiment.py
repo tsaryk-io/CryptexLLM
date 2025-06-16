@@ -3,8 +3,8 @@ import subprocess
 import sys
 import os
 
-def generate_model_id(granularity, seq_len, pred_len, features, vocab=None):
-    """Generate model ID following the naming convention from the original script"""
+def generate_model_id(llm_model, llm_layers, granularity, features, seq_len, pred_len, num_tokens):
+    """Generate comprehensive model ID including all key parameters"""
     granularity_map = {
         'hourly': 'h',
         'minute': 'Min', 
@@ -13,10 +13,11 @@ def generate_model_id(granularity, seq_len, pred_len, features, vocab=None):
     
     gran_short = granularity_map[granularity]
     
-    if vocab:
-        return f"CRYPTEX_{vocab}_{gran_short}_{seq_len}_{pred_len}_{features}"
-    else:
-        return f"CRYPTEX_{gran_short}_{seq_len}_{pred_len}_{features}"
+
+    model_id = f"{llm_model}_L{llm_layers}_{granularity}_{features}_seq{seq_len}_pred{pred_len}_V{num_tokens}"
+    
+    return model_id
+
 
 def get_data_path(granularity):
     """Get data path based on granularity"""
@@ -49,16 +50,16 @@ def launch_experiment(args):
         'target': 'close',
         'batch_size': '24',
         'model': 'TimeLLM',
-        'models_dir': './trained_models'
+        'models_dir':'/mnt/data/trained_models'
     }
     
     # Generate dynamic parameters
-    model_id = generate_model_id(args.granularity, args.seq_len, args.pred_len, args.features, args.vocab)
+    model_id = generate_model_id(args.llm_model, args.llm_layers, args.granularity, args.features, args.seq_len, args.pred_len, args.num_tokens)
     data_path = get_data_path(args.granularity)
     
     # Build the command
     cmd = [
-        'time', 'accelerate', 'launch',
+        'accelerate', 'launch',
         '--multi_gpu',
         '--mixed_precision', 'bf16',
         '--num_processes', static_config['num_process'],
@@ -89,7 +90,8 @@ def launch_experiment(args):
         '--learning_rate', static_config['learning_rate'],
         '--llm_layers', str(args.llm_layers),
         '--model', static_config['model'],
-        '--models_dir', static_config['models_dir']
+        '--models_dir', static_config['models_dir'],
+        '--num_tokens', str(args.num_tokens)
     ]
     
     # Add patch_len and stride for short_term_forecast
@@ -108,6 +110,7 @@ def launch_experiment(args):
     print(f"Label Length: {args.label_len}")
     print(f"LLM Model: {args.llm_model}")
     print(f"LLM Layers: {args.llm_layers}")
+    print(f"Num Tokens: {args.num_tokens}")
     if args.task_name == 'short_term_forecast':
         print(f"Patch Length: {args.patch_len}")
         print(f"Stride: {args.stride}")
@@ -168,8 +171,8 @@ def main():
                        help='Prediction length')
     
     # Optional arguments with defaults
-    parser.add_argument('--vocab', type=str, default=None,
-                       help='Vocabulary identifier (optional, for model ID generation)')
+    parser.add_argument('--num_tokens', type=int, default=1000,
+                       help='Number of tokens for vocabulary/mapping layer')
     parser.add_argument('--label_len', type=int, default=None,
                        help='Label length (defaults to seq_len//2 if not specified)')
     parser.add_argument('--patch_len', type=int, default=1,
