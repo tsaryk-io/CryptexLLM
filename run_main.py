@@ -102,6 +102,8 @@ parser.add_argument('--llm_layers', type=int, default=6)
 parser.add_argument('--percent', type=int, default=100)
 parser.add_argument('--models_dir', default='./trained_models', help='directory to save trained models')
 parser.add_argument('--num_tokens', type=int, default=1000, help='number of tokens for mapping layer')
+parser.add_argument('--results_csv', type=str, default='experiment_results.csv', 
+                    help='path to CSV file for logging experiment results')
 
 def log_experiment_results(args, start_time, end_time, final_mse, final_mae, status='completed'):
     """Log experiment results to CSV file"""
@@ -116,9 +118,13 @@ def log_experiment_results(args, start_time, end_time, final_mse, final_mae, sta
     # Calculate duration
     duration = end_time - start_time
     
-    # Find the launch script directory (go up from current directory)
-    # Assuming run_main.py is in the same directory as launch_experiment.py
-    csv_file = 'experiment_results.csv'
+    # Use the CSV file path from arguments
+    csv_file = args.results_csv
+    
+    # Create directory if it doesn't exist
+    csv_dir = os.path.dirname(csv_file)
+    if csv_dir and not os.path.exists(csv_dir):
+        os.makedirs(csv_dir)
     
     # Check if file exists to determine if we need to write headers
     file_exists = os.path.exists(csv_file)

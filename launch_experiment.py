@@ -75,7 +75,8 @@ def launch_experiment(args):
         'batch_size': '24',
         'model': 'TimeLLM',
         'models_dir':'/mnt/nfs/models',
-        'logs_dir':'/mnt/nfs/logs'
+        'logs_dir':'/mnt/nfs/logs',
+        'results_csv':'/mnt/nfs/experiment_results.csv'
     }
     
     # Build the command
@@ -115,7 +116,8 @@ def launch_experiment(args):
         '--model', static_config['model'],
         '--models_dir', static_config['models_dir'],
         '--num_tokens', str(args.num_tokens),
-        '--llm_dim', str(args.llm_dim)
+        '--llm_dim', str(args.llm_dim),
+        '--results_csv', static_config['results_csv']
     ]
     
     
