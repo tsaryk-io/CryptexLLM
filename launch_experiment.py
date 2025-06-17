@@ -5,9 +5,9 @@ import os
 
 from datetime import datetime
 
-def generate_model_id(llm_model, llm_layers, granularity, features, seq_len, pred_len, num_tokens):
+def generate_model_id(llm_model, llm_layers, granularity, features, seq_len, pred_len, patch_len, stride, num_tokens):
     """Generate comprehensive model ID including all key parameters"""
-    model_id = f"{llm_model}_L{llm_layers}_{granularity}_{features}_seq{seq_len}_pred{pred_len}_v{num_tokens}"
+    model_id = f"{llm_model}_L{llm_layers}_{granularity}_{features}_seq{seq_len}_pred{pred_len}_p{patch_len}_s{stride}_v{num_tokens}"
     return model_id
 
 
@@ -75,7 +75,7 @@ def launch_experiment(args):
     }
     
     # Generate dynamic parameters
-    model_id = generate_model_id(args.llm_model, args.llm_layers, args.granularity, args.features, args.seq_len, args.pred_len, args.num_tokens)
+    model_id = generate_model_id(args.llm_model, args.llm_layers, args.granularity, args.features, args.seq_len, args.pred_len, args.patch_len, args.stride, args.num_tokens)
     data_path = get_data_path(args.granularity)
     
     # Build the command
