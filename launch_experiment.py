@@ -3,19 +3,11 @@ import subprocess
 import sys
 import os
 
+from datetime import datetime
+
 def generate_model_id(llm_model, llm_layers, granularity, features, seq_len, pred_len, num_tokens):
     """Generate comprehensive model ID including all key parameters"""
-    granularity_map = {
-        'hourly': 'h',
-        'minute': 'Min', 
-        'daily': 'd'
-    }
-    
-    gran_short = granularity_map[granularity]
-    
-
-    model_id = f"{llm_model}_L{llm_layers}_{granularity}_{features}_seq{seq_len}_pred{pred_len}_V{num_tokens}"
-    
+    model_id = f"{llm_model}_L{llm_layers}_{granularity}_{features}_seq{seq_len}_pred{pred_len}_v{num_tokens}"
     return model_id
 
 
@@ -28,8 +20,37 @@ def get_data_path(granularity):
     }
     return granularity_to_file[granularity]
 
+# Prevent overriding
+def check_model_exists(models_dir, model_id):
+    """Check if model already exists in the models directory"""
+    if not os.path.exists(models_dir):
+        return False
+    
+    model_path = os.path.join(models_dir, f"{model_id}.pth")
+    return os.path.exists(model_path)
+
+def ask_override_confirmation(model_id):
+    """Ask user if they want to override existing model"""
+    print(f"Warning: Model '{model_id}' already exists in the models directory.")
+    response = input("Do you want to override it? (y/N): ")
+    return response.lower() in ['y', 'yes']
+
+# Logging
+def create_log_file(model_id, logs_dir='/mnt/nfs/logs'):
+    """Create log file path and ensure directory exists"""
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_filename = f"{model_id}_{timestamp}.log"
+    log_path = os.path.join(logs_dir, log_filename)
+    
+    return log_path
+
 def launch_experiment(args):
     """Launch the TimeLLM experiment with specified parameters"""
+    # Create log file path
+    log_path = create_log_file(model_id)
     
     # Static configuration
     static_config = {
@@ -50,7 +71,7 @@ def launch_experiment(args):
         'target': 'close',
         'batch_size': '24',
         'model': 'TimeLLM',
-        'models_dir':'/mnt/data/trained_models'
+        'models_dir':'/mnt/data/models'
     }
     
     # Generate dynamic parameters
@@ -99,6 +120,12 @@ def launch_experiment(args):
         cmd.extend(['--patch_len', str(args.patch_len)])
         cmd.extend(['--stride', str(args.stride)])
     
+    # Always check if model already exists and ask for confirmation
+    if check_model_exists(static_config['models_dir'], model_id):
+        if not ask_override_confirmation(model_id):
+            print("Experiment cancelled.")
+            return
+    
     # Print the command for verification
     print("Launching experiment with the following configuration:")
     print(f"Model ID: {model_id}")
@@ -115,23 +142,7 @@ def launch_experiment(args):
         print(f"Patch Length: {args.patch_len}")
         print(f"Stride: {args.stride}")
     print(f"Data Path: {data_path}")
-    print()
-    print("Command:")
-    ### This part is just formatting
-    formatted_cmd = "accelerate launch --multi_gpu --mixed_precision bf16 --num_processes $num_process --main_process_port $master_port run_main.py \\\n"
-    
-    param_pairs = []
-    for i in range(6, len(cmd)):  # Skip the accelerate launch part
-        if not cmd[i].startswith('--'):
-            continue
-        param_name = cmd[i]
-        param_value = cmd[i+1] if i+1 < len(cmd) and not cmd[i+1].startswith('--') else ''
-        param_pairs.append(f"  {param_name} {param_value}")
-    
-    formatted_cmd += " \\\n".join(param_pairs) + " \\\n"
-    
-    print(formatted_cmd)
-    ### End of formatting
+    print(f"Log File: {log_path}")
     print()
     
     # Ask for confirmation
@@ -141,15 +152,36 @@ def launch_experiment(args):
             print("Experiment cancelled.")
             return
     
-    # Launch the experiment
-    try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Experiment failed with return code {e.returncode}")
-        sys.exit(1)
-    except KeyboardInterrupt:
-        print("\nExperiment interrupted by user.")
-        sys.exit(1)
+    # Launch the experiment with logging
+    
+    # Write header to log file
+    with open(log_path, 'w') as log_file:
+        log_file.write(f"Experiment started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        log_file.write(f"Command: {' '.join(cmd)}\n")
+        log_file.write("=" * 80 + "\n\n")
+    
+    print(f"Logging output to: {log_path}")
+    print("=" * 50)
+    
+    # Build the full command with pipe and tee
+    cmd_str = ' '.join(f'"{arg}"' if ' ' in arg else arg for arg in cmd)
+    full_cmd = f"{cmd_str} 2>&1 | tee -a '{log_path}'"
+    
+    # Run the command using shell with pipe and tee
+    return_code = subprocess.run(full_cmd, shell=True, check=False).returncode
+    
+    # Write completion info to log
+    with open(log_path, 'a') as log_file:
+        log_file.write(f"\n\nExperiment completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        log_file.write(f"Exit code: {return_code}\n")
+    
+    if return_code != 0:
+        print(f"Experiment failed with return code {return_code}")
+        print(f"Check log file for details: {log_path}")
+        sys.exit(return_code)
+    else:
+        print(f"Experiment completed successfully!")
+        print(f"Log file saved to: {log_path}")
 
 def main():
     parser = argparse.ArgumentParser(description='Launch TimeLLM experiments with simplified configuration')
