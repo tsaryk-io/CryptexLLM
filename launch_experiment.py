@@ -71,7 +71,7 @@ def launch_experiment(args):
         'target': 'close',
         'batch_size': '24',
         'model': 'TimeLLM',
-        'models_dir':'/mnt/data/models'
+        'models_dir':'/mnt/nfs/models'
     }
     
     # Generate dynamic parameters
@@ -80,7 +80,7 @@ def launch_experiment(args):
     
     # Build the command
     cmd = [
-        'accelerate', 'launch',
+        'time', 'accelerate', 'launch',
         '--multi_gpu',
         '--mixed_precision', 'bf16',
         '--num_processes', static_config['num_process'],
