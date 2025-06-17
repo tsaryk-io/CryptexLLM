@@ -36,7 +36,7 @@ def ask_override_confirmation(model_id):
     return response.lower() in ['y', 'yes']
 
 # Logging
-def create_log_file(model_id, logs_dir='/mnt/nfs/logs'):
+def create_log_file(model_id, logs_dir):
     """Create log file path and ensure directory exists"""
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
@@ -49,8 +49,11 @@ def create_log_file(model_id, logs_dir='/mnt/nfs/logs'):
 
 def launch_experiment(args):
     """Launch the TimeLLM experiment with specified parameters"""
-    # Create log file path
-    log_path = create_log_file(model_id)
+    
+    # Generate dynamic parameters
+    model_id = generate_model_id(args.llm_model, args.llm_layers, args.granularity, args.features, args.seq_len, args.pred_len, args.patch_len, args.stride, args.num_tokens)
+    data_path = get_data_path(args.granularity)
+    
     
     # Static configuration
     static_config = {
@@ -71,16 +74,13 @@ def launch_experiment(args):
         'target': 'close',
         'batch_size': '24',
         'model': 'TimeLLM',
-        'models_dir':'/mnt/nfs/models'
+        'models_dir':'/mnt/nfs/models',
+        'logs_dir':'/mnt/nfs/logs'
     }
-    
-    # Generate dynamic parameters
-    model_id = generate_model_id(args.llm_model, args.llm_layers, args.granularity, args.features, args.seq_len, args.pred_len, args.patch_len, args.stride, args.num_tokens)
-    data_path = get_data_path(args.granularity)
     
     # Build the command
     cmd = [
-        'time', 'accelerate', 'launch',
+        'accelerate', 'launch',
         '--multi_gpu',
         '--mixed_precision', 'bf16',
         '--num_processes', static_config['num_process'],
@@ -99,6 +99,8 @@ def launch_experiment(args):
         '--seq_len', str(args.seq_len),
         '--label_len', str(args.label_len),
         '--pred_len', str(args.pred_len),
+        '--patch_len', str(args.patch_len),
+        '--stride', str(args.stride),
         '--enc_in', static_config['enc_in'],
         '--dec_in', static_config['dec_in'],
         '--c_out', static_config['c_out'],
@@ -112,13 +114,10 @@ def launch_experiment(args):
         '--llm_layers', str(args.llm_layers),
         '--model', static_config['model'],
         '--models_dir', static_config['models_dir'],
-        '--num_tokens', str(args.num_tokens)
+        '--num_tokens', str(args.num_tokens),
+        '--llm_dim', str(args.llm_dim)
     ]
     
-    # Add patch_len and stride for short_term_forecast
-    if args.task_name == 'short_term_forecast':
-        cmd.extend(['--patch_len', str(args.patch_len)])
-        cmd.extend(['--stride', str(args.stride)])
     
     # Always check if model already exists and ask for confirmation
     if check_model_exists(static_config['models_dir'], model_id):
@@ -129,6 +128,7 @@ def launch_experiment(args):
     # Print the command for verification
     print("Launching experiment with the following configuration:")
     print(f"Model ID: {model_id}")
+    print(f"LLM Dimension: {args.llm_dim}")
     print(f"Task: {args.task_name}")
     print(f"Granularity: {args.granularity}")
     print(f"Features: {args.features}")
@@ -138,11 +138,9 @@ def launch_experiment(args):
     print(f"LLM Model: {args.llm_model}")
     print(f"LLM Layers: {args.llm_layers}")
     print(f"Num Tokens: {args.num_tokens}")
-    if args.task_name == 'short_term_forecast':
-        print(f"Patch Length: {args.patch_len}")
-        print(f"Stride: {args.stride}")
+    print(f"Patch Length: {args.patch_len}")
+    print(f"Stride: {args.stride}")
     print(f"Data Path: {data_path}")
-    print(f"Log File: {log_path}")
     print()
     
     # Ask for confirmation
@@ -153,6 +151,9 @@ def launch_experiment(args):
             return
     
     # Launch the experiment with logging
+
+    # Create log file path
+    log_path = create_log_file(model_id, static_config['logs_dir'])
     
     # Write header to log file
     with open(log_path, 'w') as log_file:
@@ -173,15 +174,7 @@ def launch_experiment(args):
     # Write completion info to log
     with open(log_path, 'a') as log_file:
         log_file.write(f"\n\nExperiment completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        log_file.write(f"Exit code: {return_code}\n")
-    
-    if return_code != 0:
-        print(f"Experiment failed with return code {return_code}")
-        print(f"Check log file for details: {log_path}")
-        sys.exit(return_code)
-    else:
-        print(f"Experiment completed successfully!")
-        print(f"Log file saved to: {log_path}")
+    print(f"Log file saved to: {log_path}")
 
 def main():
     parser = argparse.ArgumentParser(description='Launch TimeLLM experiments with simplified configuration')
@@ -205,6 +198,8 @@ def main():
     # Optional arguments with defaults
     parser.add_argument('--num_tokens', type=int, default=1000,
                        help='Number of tokens for vocabulary/mapping layer')
+    parser.add_argument('--llm_dim', type=int, default='4096', 
+                        help='LLM model dimension')# LLama7b:4096; GPT2-small:768; BERT-base:768
     parser.add_argument('--label_len', type=int, default=None,
                        help='Label length (defaults to seq_len//2 if not specified)')
     parser.add_argument('--patch_len', type=int, default=1,

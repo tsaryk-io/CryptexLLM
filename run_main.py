@@ -18,6 +18,7 @@ from datetime import datetime
 
 os.environ['CURL_CA_BUNDLE'] = ''
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
+os.environ["TOKENIZERS_PARALLELISM"] = "false" # mute the warning about tokenizers parallelism
 
 from utils.tools import del_files, EarlyStopping, adjust_learning_rate, vali, load_content
 
@@ -340,7 +341,7 @@ for ii in range(args.itr):
             os.makedirs(models_path)
         
         # Create a descriptive model name
-        model_name = f"{args.model}_{args.model_id}.pth"
+        model_name = f"{args.model_id}.pth"
         model_path = os.path.join(models_path, model_name)
         
         # Save model state dict

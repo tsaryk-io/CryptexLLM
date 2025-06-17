@@ -77,6 +77,18 @@ class Model(nn.Module):
                 'model_class': AutoModel,
                 'tokenizer_class': AutoTokenizer,
                 'model_name': 'mistralai/Mistral-7B-v0.1'
+            },
+            'GEMMA': {
+                'config_class': AutoConfig,
+                'model_class': AutoModel,
+                'tokenizer_class': AutoTokenizer,
+                'model_name': 'google/gemma-3-1b-it'
+            },
+            'LLAMA3.1': {
+                'config_class': AutoConfig,
+                'model_class': AutoModel,
+                'tokenizer_class': AutoTokenizer,
+                'model_name': 'meta-llama/Llama-3.1-8B'
             }
             # Add new models here
         }
