@@ -2,7 +2,9 @@ import argparse
 import subprocess
 import sys
 import os
-
+import time
+import json
+import csv
 from datetime import datetime
 
 def generate_model_id(llm_model, llm_layers, granularity, features, seq_len, pred_len, patch_len, stride, num_tokens):
@@ -36,16 +38,62 @@ def ask_override_confirmation(model_id):
     return response.lower() in ['y', 'yes']
 
 # Logging
-def create_log_file(model_id, logs_dir):
+def create_log_file(timestamp, model_id, logs_dir):
     """Create log file path and ensure directory exists"""
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
     
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_filename = f"{model_id}_{timestamp}.log"
     log_path = os.path.join(logs_dir, log_filename)
     
     return log_path
+
+def log_experiment_results(csv_path, timestamp, model_id, args, duration, status, mse=None, mae=None):
+    """Log experiment results to a central CSV file."""
+    
+    # Create directory for CSV if it doesn't exist
+    csv_dir = os.path.dirname(csv_path)
+    if csv_dir and not os.path.exists(csv_dir):
+        os.makedirs(csv_dir)
+        
+    file_exists = os.path.exists(csv_path)
+    
+    try:
+        with open(csv_path, 'a', newline='') as f:
+            writer = csv.writer(f)
+            
+            if not file_exists:
+                headers = [
+                    'timestamp', 'model_id', 'llm_model', 'llm_layers', 'granularity', 'task_name',
+                    'features', 'seq_len', 'pred_len', 'patch_len', 'stride', 'num_tokens',
+                    'duration_seconds', 'mse', 'mae', 'status'
+                ]
+                
+                writer.writerow(headers)
+            
+            row = [
+                timestamp, 
+                model_id, 
+                args.llm_model,
+                args.llm_layers,
+                args.granularity,
+                args.task_name,  
+                args.features,
+                args.seq_len, 
+                args.pred_len,
+                args.patch_len,
+                args.stride,
+                args.num_tokens,
+                f"{duration:.2f}",
+                f"{mse:.6f}" if mse is not None else 'N/A',
+                f"{mae:.6f}" if mae is not None else 'N/A',
+                status
+            ]
+            writer.writerow(row)
+        print(f"Results for model '{model_id}' logged to {os.path.abspath(csv_path)} with status: {status}")
+            
+    except Exception as e:
+        print(f"Warning: Failed to log results to CSV: {e}")
 
 def launch_experiment(args):
     """Launch the TimeLLM experiment with specified parameters"""
@@ -152,31 +200,73 @@ def launch_experiment(args):
             print("Experiment cancelled.")
             return
     
-    # Launch the experiment with logging
+    # --- Experiment Execution and Logging ---
+    start_time = time.time()
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_path = create_log_file(timestamp, model_id, static_config['logs_dir'])
 
-    # Create log file path
-    log_path = create_log_file(model_id, static_config['logs_dir'])
-    
-    # Write header to log file
+    # Write header to the individual log file
     with open(log_path, 'w') as log_file:
         log_file.write(f"Experiment started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         log_file.write(f"Command: {' '.join(cmd)}\n")
         log_file.write("=" * 80 + "\n\n")
-    
-    print(f"Logging output to: {log_path}")
+
+    print(f"Logging terminal output to: {log_path}")
     print("=" * 50)
     
-    # Build the full command with pipe and tee
     cmd_str = ' '.join(f'"{arg}"' if ' ' in arg else arg for arg in cmd)
-    full_cmd = f"{cmd_str} 2>&1 | tee -a '{log_path}'"
+    full_cmd = f"{cmd_str} 2>&1 | tee -a '{log_path}'; exit ${{PIPESTATUS[0]}}"
     
-    # Run the command using shell with pipe and tee
-    return_code = subprocess.run(full_cmd, shell=True, check=False).returncode
+    return_code = subprocess.run(full_cmd, shell=True, check=False, executable='/bin/bash').returncode
     
-    # Write completion info to log
+    end_time = time.time()
+    duration = end_time - start_time
+
+    # --- Post-Experiment Final Logging ---
+    status = 'failed'
+    mse, mae = None, None
+
+    if return_code == 0:
+        try:
+            with open(log_path, 'r') as f:
+                for line in f:
+                    if line.startswith("FINAL_METRICS:"):
+                        # Safely parse the JSON metrics
+                        metrics_json = line.replace("FINAL_METRICS:", "").strip()
+                        metrics = json.loads(metrics_json)
+                        mse = metrics.get('mse')
+                        mae = metrics.get('mae')
+                        status = 'completed'
+                        break
+            if status == 'failed':
+                print(f"Warning: Experiment for model '{model_id}' exited with code 0 but FINAL_METRICS not found in log.")
+        except Exception as e:
+            print(f"Warning: Failed to parse metrics from log file '{log_path}'. Error: {e}")
+    else:
+        print(f"Experiment for model '{model_id}' failed with exit code {return_code}.")
+
+    # Log results to the central CSV file
+    log_experiment_results(
+        csv_path=static_config['results_csv'],
+        timestamp=timestamp,
+        model_id=model_id,
+        args=args,
+        duration=duration,
+        status=status,
+        mse=mse,
+        mae=mae
+    )
+
+    # Write completion info to the individual .log file
     with open(log_path, 'a') as log_file:
-        log_file.write(f"\n\nExperiment completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    print(f"Log file saved to: {log_path}")
+        log_file.write(f"\n\n{'=' * 80}\n")
+        log_file.write(f"Experiment finished at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        log_file.write(f"Duration: {duration:.2f} seconds\n")
+        log_file.write(f"Exit Code: {return_code}\n")
+        log_file.write(f"Final Status: {status}\n")
+    print(f"Detailed log file updated: {log_path}")
+
+    sys.exit(return_code)
 
 def main():
     parser = argparse.ArgumentParser(description='Launch TimeLLM experiments with simplified configuration')

@@ -13,8 +13,7 @@ import time
 import random
 import numpy as np
 import os
-import csv
-from datetime import datetime
+import json
 
 os.environ['CURL_CA_BUNDLE'] = ''
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
@@ -81,7 +80,7 @@ parser.add_argument('--patch_len', type=int, default=16, help='patch length')
 parser.add_argument('--stride', type=int, default=8, help='stride')
 parser.add_argument('--prompt_domain', type=int, default=0, help='')
 parser.add_argument('--llm_model', type=str, default='LLAMA', help='LLM model') # LLAMA, GPT2, BERT
-parser.add_argument('--llm_dim', type=int, default='4096', help='LLM model dimension')# LLama7b:4096; GPT2-small:768; BERT-base:768
+parser.add_argument('--llm_dim', type=int, default='4096', help='LLM model dimension') # LLama7b:4096; GPT2-small:768; BERT-base:768
 
 
 # optimization
@@ -100,74 +99,13 @@ parser.add_argument('--pct_start', type=float, default=0.2, help='pct_start')
 parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
 parser.add_argument('--llm_layers', type=int, default=6)
 parser.add_argument('--percent', type=int, default=100)
-parser.add_argument('--models_dir', default='./trained_models', help='directory to save trained models')
+parser.add_argument('--models_dir', default='/mnt/nfs/models', help='directory to save trained models')
 parser.add_argument('--num_tokens', type=int, default=1000, help='number of tokens for mapping layer')
-parser.add_argument('--results_csv', type=str, default='experiment_results.csv', 
-                    help='path to CSV file for logging experiment results')
-
-def log_experiment_results(args, start_time, end_time, final_mse, final_mae, status='completed'):
-    """Log experiment results to CSV file"""
-    # Determine granularity from data_path
-    granularity_map = {
-        'candlesticks-h.csv': 'hourly',
-        'candlesticks-Min.csv': 'minute', 
-        'candlesticks-D.csv': 'daily'
-    }
-    granularity = granularity_map.get(args.data_path, 'unknown')
-    
-    # Calculate duration
-    duration = end_time - start_time
-    
-    # Use the CSV file path from arguments
-    csv_file = args.results_csv
-    
-    # Create directory if it doesn't exist
-    csv_dir = os.path.dirname(csv_file)
-    if csv_dir and not os.path.exists(csv_dir):
-        os.makedirs(csv_dir)
-    
-    # Check if file exists to determine if we need to write headers
-    file_exists = os.path.exists(csv_file)
-    
-    try:
-        with open(csv_file, 'a', newline='') as f:
-            writer = csv.writer(f)
-            
-            # Write headers if file is new
-            if not file_exists:
-                headers = [
-                    'timestamp', 'model_id', 'task_name', 'granularity', 'features',
-                    'seq_len', 'pred_len', 'llm_model', 'llm_layers', 'num_tokens',
-                    'duration_seconds', 'mse', 'mae', 'status'
-                ]
-                writer.writerow(headers)
-            
-            # Write the results
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            row = [
-                timestamp, args.model_id, args.task_name, granularity, args.features,
-                args.seq_len, args.pred_len, args.llm_model, args.llm_layers, args.num_tokens,
-                duration, final_mse, final_mae, status
-            ]
-            writer.writerow(row)
-            
-        print(f"\nResults logged to: {os.path.abspath(csv_file)}")
-        print(f"Duration: {duration:.2f} seconds ({duration/60:.2f} minutes)")
-        if final_mse is not None:
-            print(f"Final MSE: {final_mse:.6f}")
-        if final_mae is not None:
-            print(f"Final MAE: {final_mae:.6f}")
-            
-    except Exception as e:
-        print(f"Warning: Failed to log results to CSV: {e}")
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
 deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin)
-
-# Record overall start time
-overall_start_time = time.time()
 
 for ii in range(args.itr):
     # setting record of experiments
@@ -362,8 +300,14 @@ for ii in range(args.itr):
         del_files(path)  # delete checkpoint files
         accelerator.print('success delete checkpoints')
 
-# Log the final results after all iterations complete
-overall_end_time = time.time()
+# After all training and evaluation, print the final metrics for the launcher to capture
+accelerator.wait_for_everyone()
 if accelerator.is_local_main_process:
-    log_experiment_results(args, overall_start_time, overall_end_time, 
-                          final_test_mse, final_test_mae, 'completed')
+    if final_test_mse is not None and final_test_mae is not None:
+        metrics = {
+            "model_id": args.model_id,
+            "mse": final_test_mse,
+            "mae": final_test_mae
+        }
+        # Print metrics in a parseable format (/!\ Make sure the formatting agrees with the parsing in launch_experiment.py)
+        print(f"FINAL_METRICS:{json.dumps(metrics)}")
