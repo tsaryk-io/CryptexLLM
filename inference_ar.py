@@ -248,6 +248,7 @@ def main():
         output_path=os.path.join(config['output_dir'], f"iar_{cli_args.model_id}.csv"),
         freq=freq,
         label_len=parsed_params['seq_len'] // 2,
+        task_name='short_term_forecast', # Hardcoded, temporary fix, check if it affects anything vs "long_term_forecast"
     )
 
     # Print configuration for verification

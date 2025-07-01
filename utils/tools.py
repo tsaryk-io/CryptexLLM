@@ -134,9 +134,9 @@ def del_files(dir_path):
     shutil.rmtree(dir_path)
 
 
-def vali(args, accelerator, model, vali_data, vali_loader, criterion, mae_metric):
+def vali(args, accelerator, model, vali_data, vali_loader, criterion, metric_func):
     total_loss = []
-    total_mae_loss = []
+    total_metric_loss = []
     model.eval()
     with torch.no_grad():
         for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in tqdm(enumerate(vali_loader)):
@@ -174,16 +174,16 @@ def vali(args, accelerator, model, vali_data, vali_loader, criterion, mae_metric
 
             loss = criterion(pred, true)
 
-            mae_loss = mae_metric(pred, true)
+            metric_loss = metric_func(pred, true)
 
             total_loss.append(loss.item())
-            total_mae_loss.append(mae_loss.item())
+            total_metric_loss.append(metric_loss.item())
 
     total_loss = np.average(total_loss)
-    total_mae_loss = np.average(total_mae_loss)
+    total_metric_loss = np.average(total_metric_loss)
 
     model.train()
-    return total_loss, total_mae_loss
+    return total_loss, total_metric_loss
 
 
 def test(args, accelerator, model, train_loader, vali_loader, criterion):

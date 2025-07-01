@@ -6,6 +6,7 @@ from torch import nn, optim
 from torch.optim import lr_scheduler
 from tqdm import tqdm
 
+from utils.metrics import get_loss_function, get_metric_function
 from models import Autoformer, DLinear, TimeLLM
 
 from data_provider.data_factory import data_provider
@@ -82,7 +83,6 @@ parser.add_argument('--prompt_domain', type=int, default=0, help='')
 parser.add_argument('--llm_model', type=str, default='LLAMA', help='LLM model') # LLAMA, GPT2, BERT
 parser.add_argument('--llm_dim', type=int, default='4096', help='LLM model dimension') # LLama7b:4096; GPT2-small:768; BERT-base:768
 
-
 # optimization
 parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
 parser.add_argument('--itr', type=int, default=1, help='experiments times')
@@ -93,7 +93,8 @@ parser.add_argument('--eval_batch_size', type=int, default=8, help='batch size o
 parser.add_argument('--patience', type=int, default=10, help='early stopping patience')
 parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
 parser.add_argument('--des', type=str, default='test', help='exp description')
-parser.add_argument('--loss', type=str, default='MSE', help='loss function')
+parser.add_argument('--loss', type=str, default='MSE', help='loss function for training')
+parser.add_argument('--metric', type=str, default='MAE', help='metric for evaluation')
 parser.add_argument('--lradj', type=str, default='type1', help='adjust learning rate')
 parser.add_argument('--pct_start', type=float, default=0.2, help='pct_start')
 parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
@@ -165,8 +166,8 @@ for ii in range(args.itr):
                                             epochs=args.train_epochs,
                                             max_lr=args.learning_rate)
 
-    criterion = nn.MSELoss()
-    mae_metric = nn.L1Loss()
+    criterion = get_loss_function(args.loss)
+    metric_func = get_metric_function(args.metric)
 
     train_loader, vali_loader, test_loader, model, model_optim, scheduler = accelerator.prepare(
         train_loader, vali_loader, test_loader, model, model_optim, scheduler)
@@ -175,8 +176,8 @@ for ii in range(args.itr):
         scaler = torch.cuda.amp.GradScaler()
 
     # Variables to track final metrics
-    final_test_mse = None
-    final_test_mae = None
+    final_test_loss = None
+    final_test_metric = None
 
     for epoch in range(args.train_epochs):
         iter_count = 0
@@ -247,16 +248,16 @@ for ii in range(args.itr):
 
         accelerator.print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
         train_loss = np.average(train_loss)
-        vali_loss, vali_mae_loss = vali(args, accelerator, model, vali_data, vali_loader, criterion, mae_metric)
-        test_loss, test_mae_loss = vali(args, accelerator, model, test_data, test_loader, criterion, mae_metric)
+        vali_loss, vali_metric = vali(args, accelerator, model, vali_data, vali_loader, criterion, metric_func)
+        test_loss, test_metric = vali(args, accelerator, model, test_data, test_loader, criterion, metric_func)
         
         # Store the final test metrics (will be overwritten each epoch, so final values are from last epoch)
-        final_test_mse = test_loss
-        final_test_mae = test_mae_loss
+        final_test_loss = test_loss
+        final_test_metric = test_metric
         
         accelerator.print(
-            "Epoch: {0} | Train Loss: {1:.7f} Vali Loss: {2:.7f} Test Loss: {3:.7f} MAE Loss: {4:.7f}".format(
-                epoch + 1, train_loss, vali_loss, test_loss, test_mae_loss))
+            "Epoch: {0} | {6} Train Loss: {1:.7f} Vali Loss: {2:.7f} Test Loss: {3:.7f} {5} Metric: {4:.7f}".format(
+                epoch + 1, train_loss, vali_loss, test_loss, test_metric, args.metric, args.loss))
 
         early_stopping(vali_loss, model, path)
         if early_stopping.early_stop:
@@ -303,11 +304,11 @@ for ii in range(args.itr):
 # After all training and evaluation, print the final metrics for the launcher to capture
 accelerator.wait_for_everyone()
 if accelerator.is_local_main_process:
-    if final_test_mse is not None and final_test_mae is not None:
+    if final_test_loss is not None and final_test_metric is not None:
         metrics = {
             "model_id": args.model_id,
-            "mse": final_test_mse,
-            "mae": final_test_mae
+            args.loss.lower(): final_test_loss,
+            args.metric.lower(): final_test_metric
         }
         # Print metrics in a parseable format (/!\ Make sure the formatting agrees with the parsing in launch_experiment.py)
         print(f"FINAL_METRICS:{json.dumps(metrics)}")

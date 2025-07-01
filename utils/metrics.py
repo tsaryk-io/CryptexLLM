@@ -1,4 +1,35 @@
 import numpy as np
+import torch
+from torch import nn
+import numpy as np
+
+def get_loss_function(loss_name):
+    # Returns an instance of the specified loss function.
+    loss_name = loss_name.upper()
+    if loss_name == 'MSE':
+        return nn.MSELoss()
+    elif loss_name == 'MAE':
+        return nn.L1Loss()
+    elif loss_name == 'MAPE':
+        return MAPELoss()
+    else:
+        raise ValueError(f"Unsupported loss type: {loss_name}")
+
+def get_metric_function(metric_name):
+    # Returns an instance of the specified evaluation metric.
+    metric_name = metric_name.upper()
+    if metric_name == 'MSE':
+        return nn.MSELoss()
+    elif metric_name == 'MAE':
+        return nn.L1Loss()
+    elif metric_name == 'MAPE':
+        return MAPELoss()
+    elif metric_name == 'MDA':
+        return MDAMetric()
+    elif metric_name == 'SHARPE':
+        return SharpeRatioMetric()
+    else:
+        raise ValueError(f"Unsupported metric type: {metric_name}")
 
 
 def RSE(pred, true):
@@ -29,6 +60,72 @@ def MAPE(pred, true):
 
 def MSPE(pred, true):
     return np.mean(np.square((pred - true) / true))
+
+
+class MAPELoss(nn.Module):
+    """
+    Mean Absolute Percentage Error:
+        MAPE = mean( |[pred - true] / true| )
+    """
+    def __init__(self, eps: float = 1e-8):
+        super().__init__()
+        self.eps = eps # to avoid division by zero
+
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        # ensure true is nonzero
+        denom = torch.where(torch.abs(true) < self.eps,
+                            torch.full_like(true, self.eps),
+                            true)
+        return torch.mean(torch.abs((pred - true) / denom))
+
+
+class MDAMetric(nn.Module):
+    """
+    Mean Directional Accuracy (MDA)
+    """
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        # pred, true shape: [batch, seq_len, feature_dim] or [batch, seq_len]
+        # Compare change direction relative to previous timestep
+
+        if pred.shape[1] < 2:
+            print(f"[Warning] Not enough steps to compute MDA. pred.shape: {pred.shape}")
+            return torch.tensor(0.0, device=pred.device)
+
+        pred_diff = pred[:, 1:] - pred[:, :-1]
+        true_diff = true[:, 1:] - true[:, :-1]
+
+        correct = (pred_diff * true_diff) > 0  # boolean tensor: True if same direction
+        mda = correct.float().mean()  # take mean accuracy over all elements
+
+        return mda
+
+class SharpeRatioMetric(nn.Module):
+    """
+    Computes the Sharpe Ratio for a batch of returns (predictions).
+    Assumes risk-free rate = 0.
+    """
+    def __init__(self, eps=1e-8):
+        super().__init__()
+        self.eps = eps  # to avoid division by zero
+
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        """
+        pred, true shape: [batch, seq_len, feature_dim] or [batch, seq_len]
+        Computes over the prediction period only.
+        """
+        # calculate returns as diff relative to previous timestep
+        returns = pred[:, 1:] - pred[:, :-1]
+
+        mean_return = returns.mean()
+        std_return = returns.std()
+
+        # prevent divide-by-zero
+        sharpe_ratio = mean_return / (std_return + self.eps)
+
+        return sharpe_ratio
 
 
 def metric(pred, true):
