@@ -48,48 +48,54 @@ def create_log_file(timestamp, model_id, logs_dir):
     
     return log_path
 
-def log_experiment_results(csv_path, timestamp, model_id, args, duration, status, mse=None, mae=None):
-    """Log experiment results to a central CSV file."""
+def log_experiment_results(csv_path, timestamp, model_id, args, duration, status, metrics=None):
+    """Log experiment results to a central CSV."""
     
     # Create directory for CSV if it doesn't exist
     csv_dir = os.path.dirname(csv_path)
     if csv_dir and not os.path.exists(csv_dir):
         os.makedirs(csv_dir)
         
+    # Use the exact, fixed headers you requested
+    headers = [
+        'timestamp', 'model_id', 'llm_model', 'llm_layers', 'granularity', 'task_name',
+        'features', 'seq_len', 'pred_len', 'patch_len', 'stride', 'num_tokens',
+        'duration_seconds', 'metrics', 'status'
+    ]
+
+    # Prepare the data for the new row
+    new_row_data = {
+        'timestamp': timestamp,
+        'model_id': model_id,
+        'llm_model': args.llm_model,
+        'llm_layers': args.llm_layers,
+        'granularity': args.granularity,
+        'task_name': args.task_name,
+        'features': args.features,
+        'seq_len': args.seq_len,
+        'pred_len': args.pred_len,
+        'patch_len': args.patch_len,
+        'stride': args.stride,
+        'num_tokens': args.num_tokens,
+        'duration_seconds': f"{duration:.2f}",
+        'metrics': json.dumps(metrics or {}),
+        'status': status
+    }
+
+    # Check if the file already exists to decide whether to write headers
     file_exists = os.path.exists(csv_path)
     
     try:
+        # Open the file in append mode
         with open(csv_path, 'a', newline='') as f:
-            writer = csv.writer(f)
+            writer = csv.DictWriter(f, fieldnames=headers)
             
-            if not file_exists:
-                headers = [
-                    'timestamp', 'model_id', 'llm_model', 'llm_layers', 'granularity', 'task_name',
-                    'features', 'seq_len', 'pred_len', 'patch_len', 'stride', 'num_tokens',
-                    'duration_seconds', 'mse', 'mae', 'status'
-                ]
-                
-                writer.writerow(headers)
+            # If the file is new or empty, write the header row first
+            if not file_exists or os.path.getsize(csv_path) == 0:
+                writer.writeheader()
             
-            row = [
-                timestamp, 
-                model_id, 
-                args.llm_model,
-                args.llm_layers,
-                args.granularity,
-                args.task_name,  
-                args.features,
-                args.seq_len, 
-                args.pred_len,
-                args.patch_len,
-                args.stride,
-                args.num_tokens,
-                f"{duration:.2f}",
-                f"{mse:.6f}" if mse is not None else 'N/A',
-                f"{mae:.6f}" if mae is not None else 'N/A',
-                status
-            ]
-            writer.writerow(row)
+            writer.writerow(new_row_data)
+
         print(f"Results for model '{model_id}' logged to {os.path.abspath(csv_path)} with status: {status}")
             
     except Exception as e:
@@ -165,7 +171,8 @@ def launch_experiment(args):
         '--models_dir', static_config['models_dir'],
         '--num_tokens', str(args.num_tokens),
         '--llm_dim', str(args.llm_dim),
-        '--results_csv', static_config['results_csv']
+        '--loss', str(args.loss),
+        '--metric', str(args.metric),
     ]
     
     
@@ -224,18 +231,16 @@ def launch_experiment(args):
 
     # --- Post-Experiment Final Logging ---
     status = 'failed'
-    mse, mae = None, None
+    final_metrics = {} # Use a dictionary to hold all metrics
 
     if return_code == 0:
         try:
             with open(log_path, 'r') as f:
                 for line in f:
                     if line.startswith("FINAL_METRICS:"):
-                        # Safely parse the JSON metrics
+                        # Safely parse the entire JSON metrics object
                         metrics_json = line.replace("FINAL_METRICS:", "").strip()
-                        metrics = json.loads(metrics_json)
-                        mse = metrics.get('mse')
-                        mae = metrics.get('mae')
+                        final_metrics = json.loads(metrics_json)
                         status = 'completed'
                         break
             if status == 'failed':
@@ -253,8 +258,7 @@ def launch_experiment(args):
         args=args,
         duration=duration,
         status=status,
-        mse=mse,
-        mae=mae
+        metrics=final_metrics # Pass the entire metrics dictionary
     )
 
     # Write completion info to the individual .log file
@@ -300,6 +304,10 @@ def main():
                        help='Stride (for short_term_forecast)')
     parser.add_argument('--auto_confirm', action='store_true',
                        help='Skip confirmation prompt and run immediately')
+    parser.add_argument('--loss', type=str, default='MSE',
+                       help='loss fuction for training')
+    parser.add_argument('--metric', type=str, default='MAE', 
+                       help='metric for evaluation')
     
     args = parser.parse_args()
     

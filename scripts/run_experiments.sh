@@ -3,6 +3,8 @@
 LLM_MODEL="LLAMA3.1"
 LLM_LAYERS=10
 GRANULARITY="daily"
+LOSS="MSE"
+METRIC="MAE"
 TASK_NAME="short_term_forecast"
 FEATURE_SETS=("MS" "S")
 NUM_TOKENS_LIST=(100 500 1000)
@@ -26,6 +28,8 @@ for feature in "${FEATURE_SETS[@]}"; do
           --llm_model "$LLM_MODEL" \
           --llm_layers "$LLM_LAYERS" \
           --granularity "$GRANULARITY" \
+          --loss "$LOSS" \
+          --metric "$METRIC" \
           --task_name "$TASK_NAME" \
           --features "$feature" \
           --seq_len "$seq_len" \
