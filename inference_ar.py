@@ -44,7 +44,7 @@ def get_data_path_and_freq(granularity):
     granularity_map = {
         'hourly': ('candlesticks-h.csv', 'h'),
         'minute': ('candlesticks-Min.csv', 't'),
-        'daily': ('candlesticks-D.csv', 'd'),
+        'daily': ('inference_test_btc_D_2024_2025.csv', 'd'),
     }
     if granularity not in granularity_map:
         print(f"Error: Invalid granularity '{granularity}' found in model_id.")
