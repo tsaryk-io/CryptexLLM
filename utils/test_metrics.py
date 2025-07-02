@@ -1,5 +1,5 @@
 import torch
-from metrics import MDAMetric, SharpeRatioMetric, GMADLLoss, MADLLoss
+from metrics import MDAMetric, SharpeRatioMetric, GMADLLoss, MADLLoss, DLFLoss
 
 # Closer to 1 is better in MDA
 mda_fn = MDAMetric()
@@ -84,3 +84,19 @@ pred_returns = torch.tensor([[0.01, 0.02, -0.01]])
 true_returns = torch.tensor([[0.01, -0.02, -0.01]])
 loss = madl_fn(pred_returns, true_returns)
 print(f"MADL: {loss.item()}")
+
+# DLF Testing
+
+from metrics import DLFLoss
+
+dlf_fn = DLFLoss(lambda_weight=0.5)
+
+# Directionally aligned
+pred = torch.tensor([[1.0, 2.0, 3.0]])
+true = torch.tensor([[1.5, 2.5, 3.5]])
+print("DLF aligned:", dlf_fn(pred, true).item())
+
+# Directionally opposite
+pred = torch.tensor([[3.0, 2.0, 1.0]])
+true = torch.tensor([[1.5, 2.5, 3.5]])
+print("DLF opposite:", dlf_fn(pred, true).item())

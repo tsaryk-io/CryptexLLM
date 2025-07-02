@@ -16,6 +16,8 @@ def get_loss_function(loss_name):
         return MADLLoss()
     elif loss_name == 'GMADL':
         return GMADLLoss()
+    elif loss_name == 'DLF':
+        return DLFLoss()
     else:
         raise ValueError(f"Unsupported loss type: {loss_name}")
 
@@ -179,6 +181,30 @@ class GMADLLoss(nn.Module):
 
         # Mean over all elements
         return loss.mean()
+
+class DLFLoss(nn.Module):
+    # Directional Loss Function:
+    def __init__(self, lambda_weight=0.5):
+        super().__init__()
+        self.lambda_weight = lambda_weight
+        self.base_loss = nn.L1Loss()
+
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        if pred.shape != true.shape:
+            raise ValueError(f"Shape mismatch: pred {pred.shape}, true {true.shape}")
+        if pred.dim() == 3:
+            pred = pred.squeeze(-1)
+            true = true.squeeze(-1)
+
+        pred_diff = pred[:, 1:] - pred[:, :-1]
+        true_diff = true[:, 1:] - true[:, :-1]
+        direction_mismatch = (torch.sign(pred_diff) != torch.sign(true_diff)).float()
+        direction_loss = direction_mismatch.mean()
+
+        base = self.base_loss(pred, true)
+
+        total_loss = self.lambda_weight * direction_loss + (1 - self.lambda_weight) * base
+        return total_loss
 
 
 def metric(pred, true):
