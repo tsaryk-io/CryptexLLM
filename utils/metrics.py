@@ -18,6 +18,16 @@ def get_loss_function(loss_name):
         return GMADLLoss()
     elif loss_name == 'DLF':
         return DLFLoss()
+    elif loss_name == 'ASYMMETRIC':
+        return AsymmetricLoss()
+    elif loss_name == 'QUANTILE':
+        return QuantileLoss()
+    elif loss_name == 'SHARPE_LOSS':
+        return SharpeRatioLoss()
+    elif loss_name == 'TRADING_LOSS':
+        return TradingLoss()
+    elif loss_name == 'ROBUST':
+        return RobustLoss()
     else:
         raise ValueError(f"Unsupported loss type: {loss_name}")
 
@@ -215,3 +225,160 @@ def metric(pred, true):
     mspe = MSPE(pred, true)
 
     return mae, mse, rmse, mape, mspe
+
+
+class AsymmetricLoss(nn.Module):
+    """
+    Asymmetric loss function that penalizes underestimation and overestimation differently.
+    Useful for trading scenarios where false signals have different costs.
+    """
+    def __init__(self, alpha=0.7, beta=0.3):
+        super().__init__()
+        self.alpha = alpha  # Weight for underestimation (missing upward moves)
+        self.beta = beta    # Weight for overestimation (false upward signals)
+        
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        if pred.shape != true.shape:
+            raise ValueError(f"Shape mismatch: pred {pred.shape}, true {true.shape}")
+            
+        error = pred - true
+        
+        # Different penalties for positive and negative errors
+        pos_error = torch.where(error > 0, error, torch.zeros_like(error))
+        neg_error = torch.where(error < 0, error, torch.zeros_like(error))
+        
+        # Asymmetric penalty
+        loss = self.alpha * torch.mean(torch.abs(neg_error)) + self.beta * torch.mean(torch.abs(pos_error))
+        
+        return loss
+
+
+class QuantileLoss(nn.Module):
+    """
+    Quantile loss for uncertainty quantification.
+    Provides prediction intervals instead of point estimates.
+    """
+    def __init__(self, quantiles=[0.1, 0.5, 0.9]):
+        super().__init__()
+        self.quantiles = quantiles
+        
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        if pred.shape != true.shape:
+            raise ValueError(f"Shape mismatch: pred {pred.shape}, true {true.shape}")
+            
+        total_loss = 0
+        
+        for i, q in enumerate(self.quantiles):
+            error = true - pred
+            loss_q = torch.mean(torch.max(q * error, (q - 1) * error))
+            total_loss += loss_q
+            
+        return total_loss / len(self.quantiles)
+
+
+class SharpeRatioLoss(nn.Module):
+    """
+    Loss function that directly optimizes for Sharpe ratio.
+    Maximizes risk-adjusted returns.
+    """
+    def __init__(self, risk_free_rate=0.0, eps=1e-8):
+        super().__init__()
+        self.risk_free_rate = risk_free_rate
+        self.eps = eps
+        
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        if pred.shape != true.shape:
+            raise ValueError(f"Shape mismatch: pred {pred.shape}, true {true.shape}")
+            
+        # Calculate returns from predictions
+        if pred.dim() == 3:  # [batch, seq_len, features]
+            pred_returns = pred[:, 1:] - pred[:, :-1]
+        else:  # [batch, seq_len]
+            pred_returns = pred[:, 1:] - pred[:, :-1]
+            
+        # Calculate mean and std of returns
+        mean_return = torch.mean(pred_returns)
+        std_return = torch.std(pred_returns)
+        
+        # Sharpe ratio (we want to maximize, so we minimize negative)
+        sharpe_ratio = (mean_return - self.risk_free_rate) / (std_return + self.eps)
+        
+        return -sharpe_ratio  # Negative because we want to maximize
+
+
+class TradingLoss(nn.Module):
+    """
+    Trading-specific loss that considers transaction costs and directional accuracy.
+    """
+    def __init__(self, transaction_cost=0.001, direction_weight=0.5):
+        super().__init__()
+        self.transaction_cost = transaction_cost
+        self.direction_weight = direction_weight
+        self.base_loss = nn.L1Loss()
+        
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        if pred.shape != true.shape:
+            raise ValueError(f"Shape mismatch: pred {pred.shape}, true {true.shape}")
+            
+        # Base prediction loss
+        base = self.base_loss(pred, true)
+        
+        # Directional accuracy loss
+        if pred.dim() == 3:
+            pred_flat = pred.squeeze(-1)
+            true_flat = true.squeeze(-1)
+        else:
+            pred_flat = pred
+            true_flat = true
+            
+        if pred_flat.shape[1] < 2:
+            return base
+            
+        pred_diff = pred_flat[:, 1:] - pred_flat[:, :-1]
+        true_diff = true_flat[:, 1:] - true_flat[:, :-1]
+        
+        # Direction mismatch penalty
+        direction_mismatch = (torch.sign(pred_diff) != torch.sign(true_diff)).float()
+        direction_loss = direction_mismatch.mean()
+        
+        # Transaction cost penalty (encourage fewer trades)
+        trade_signals = torch.abs(torch.sign(pred_diff))
+        transaction_loss = trade_signals.mean() * self.transaction_cost
+        
+        total_loss = ((1 - self.direction_weight) * base + 
+                     self.direction_weight * direction_loss + 
+                     transaction_loss)
+        
+        return total_loss
+
+
+class RobustLoss(nn.Module):
+    """
+    Robust loss function that is less sensitive to outliers.
+    Uses Huber loss with adaptive threshold.
+    """
+    def __init__(self, delta=1.0, adaptive=True):
+        super().__init__()
+        self.delta = delta
+        self.adaptive = adaptive
+        
+    def forward(self, pred: torch.Tensor, true: torch.Tensor) -> torch.Tensor:
+        if pred.shape != true.shape:
+            raise ValueError(f"Shape mismatch: pred {pred.shape}, true {true.shape}")
+            
+        error = pred - true
+        
+        if self.adaptive:
+            # Adaptive threshold based on error distribution
+            delta = torch.quantile(torch.abs(error), 0.75)
+        else:
+            delta = self.delta
+            
+        # Huber loss
+        is_small_error = torch.abs(error) <= delta
+        small_error_loss = 0.5 * error ** 2
+        large_error_loss = delta * (torch.abs(error) - 0.5 * delta)
+        
+        loss = torch.where(is_small_error, small_error_loss, large_error_loss)
+        
+        return torch.mean(loss)

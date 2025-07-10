@@ -1,4 +1,5 @@
 from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_M4
+from data_provider.enhanced_data_loader import Dataset_CRYPTEX_Enhanced, Dataset_CRYPTEX_MultiScale
 from torch.utils.data import DataLoader
 
 data_dict = {
@@ -11,6 +12,8 @@ data_dict = {
     'Weather': Dataset_Custom,
     'm4': Dataset_M4,
     'CRYPTEX': Dataset_Custom,
+    'CRYPTEX_ENHANCED': Dataset_CRYPTEX_Enhanced,
+    'CRYPTEX_MULTISCALE': Dataset_CRYPTEX_MultiScale,
 }
 
 
