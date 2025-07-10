@@ -246,7 +246,9 @@ class Model(nn.Module):
         res = q_fft * torch.conj(k_fft)
         corr = torch.fft.irfft(res, dim=-1)
         mean_value = torch.mean(corr, dim=1)
-        _, lags = torch.topk(mean_value, self.top_k, dim=-1)
+
+        k = min(self.top_k, mean_value.shape[-1])
+        _, lags = torch.topk(mean_value, k, dim=-1)
         return lags
 
 
