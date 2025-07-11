@@ -1,0 +1,149 @@
+{
+  "timestamp": "2025-07-11T12:08:51.011823",
+  "overall_score": 0.775,
+  "dataset_info": {
+    "name": "test_cryptocurrency_data",
+    "shape": [
+      1000,
+      6
+    ],
+    "columns": [
+      "timestamp",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume"
+    ],
+    "dtypes": {
+      "timestamp": "int64",
+      "open": "float64",
+      "high": "float64",
+      "low": "float64",
+      "close": "float64",
+      "volume": "float64"
+    },
+    "memory_usage_mb": 0.045902252197265625
+  },
+  "validation_results": [
+    {
+      "check_name": "Data Completeness",
+      "passed": "True",
+      "score": 0.9,
+      "message": "Missing data ratio: 0.005 (threshold: 0.05)",
+      "severity": "info",
+      "details": {
+        "total_cells": 6000,
+        "missing_cells": "30",
+        "missing_ratio": 0.005,
+        "problematic_columns": {}
+      }
+    },
+    {
+      "check_name": "Data Consistency",
+      "passed": false,
+      "score": 0.49999999999999994,
+      "message": "Found issues: 5 duplicate timestamps; 18 negative volume values",
+      "severity": "error",
+      "details": {
+        "issues": [
+          "5 duplicate timestamps",
+          "18 negative volume values"
+        ]
+      }
+    },
+    {
+      "check_name": "Price Integrity",
+      "passed": false,
+      "score": 0,
+      "message": "Issues found: 18 extreme price changes (>50.0%) in open; 152 price outliers detected in open; 18 extreme price changes (>50.0%) in high; 152 price outliers detected in high; 18 extreme price changes (>50.0%) in low; 152 price outliers detected in low; 18 extreme price changes (>50.0%) in close; 152 price outliers detected in close",
+      "severity": "error",
+      "details": {
+        "issues": [
+          "18 extreme price changes (>50.0%) in open",
+          "152 price outliers detected in open",
+          "18 extreme price changes (>50.0%) in high",
+          "152 price outliers detected in high",
+          "18 extreme price changes (>50.0%) in low",
+          "152 price outliers detected in low",
+          "18 extreme price changes (>50.0%) in close",
+          "152 price outliers detected in close"
+        ]
+      }
+    },
+    {
+      "check_name": "Volume Integrity",
+      "passed": false,
+      "score": 0.7,
+      "message": "Issues found: 69 volume spikes (>10x change)",
+      "severity": "warning",
+      "details": {
+        "issues": [
+          "69 volume spikes (>10x change)"
+        ],
+        "volume_cv": 4.1209593804233595
+      }
+    },
+    {
+      "check_name": "Temporal Integrity",
+      "passed": false,
+      "score": 0.8,
+      "message": "Issues found: Cannot infer consistent frequency from timestamps",
+      "severity": "warning",
+      "details": {
+        "issues": [
+          "Cannot infer consistent frequency from timestamps"
+        ],
+        "max_gap_hours": 24.0,
+        "total_timespan_days": 60
+      }
+    },
+    {
+      "check_name": "OHLC Relationships",
+      "passed": false,
+      "score": 0,
+      "message": "Violations found: 40 cases where high < max(open, close); 41 cases where low > min(open, close); 40 cases where high < low",
+      "severity": "error",
+      "details": {
+        "issues": [
+          "40 cases where high < max(open, close)",
+          "41 cases where low > min(open, close)",
+          "40 cases where high < low"
+        ]
+      }
+    },
+    {
+      "check_name": "Statistical Properties",
+      "passed": false,
+      "score": 0.5000000000000001,
+      "message": "Issues found: Column open is highly skewed (skewness: 6.89); Column high is highly skewed (skewness: 6.81); Column low is highly skewed (skewness: 6.80); Column close is highly skewed (skewness: 6.81); Column volume is highly skewed (skewness: 9.82)",
+      "severity": "error",
+      "details": {
+        "issues": [
+          "Column open is highly skewed (skewness: 6.89)",
+          "Column high is highly skewed (skewness: 6.81)",
+          "Column low is highly skewed (skewness: 6.80)",
+          "Column close is highly skewed (skewness: 6.81)",
+          "Column volume is highly skewed (skewness: 9.82)"
+        ]
+      }
+    },
+    {
+      "check_name": "External Data Alignment",
+      "passed": true,
+      "score": 1.0,
+      "message": "No external data columns found",
+      "severity": "info",
+      "details": {}
+    }
+  ],
+  "data_profile": {
+    "dataset_name": "test_cryptocurrency_data",
+    "creation_time": "2025-07-11T12:08:51.008406",
+    "basic_info": {
+      "shape": [
+        1000,
+        6
+      ],
+      "memory_usage_mb": 0.045902252197265625,
+      "dtypes": {

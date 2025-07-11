@@ -1,0 +1,13 @@
+Dataset description: The Swing Trading Bitcoin dataset captures intermediate-term price patterns and regime changes optimized for multi-day position holding. This dataset emphasizes trend identification, pullback/breakout patterns, and regime transition signals for positions held from days to weeks. Features include multi-timeframe confluence, trend strength indicators, and regime-aware pattern recognition for capturing intermediate price swings.
+
+Intermediate-Term Pattern Analysis: Swing trading focuses on capturing substantial price moves that develop over multiple days or weeks. The dataset includes trend analysis tools, swing high/low identification, and momentum persistence indicators that signal high-probability directional moves with favorable risk-reward profiles.
+
+Multi-Timeframe Confluence: Effective swing trading requires alignment across multiple timeframes. The dataset provides daily, 4-hour, and hourly pattern confluence analysis to identify trades where short-term signals align with intermediate-term trends for enhanced probability outcomes.
+
+Regime-Aware Strategy: Different market regimes require different swing trading approaches. Bull markets favor momentum strategies and pullback buying, while bear markets emphasize bounce-selling and breakdown trades. Sideways markets require range-bound strategies with breakout preparation.
+
+Risk Management Framework: Swing trading allows for wider stop-losses and longer holding periods but requires careful position sizing and risk management. Predictions should identify clear swing levels, trend continuation patterns, and regime-appropriate entry/exit strategies.
+
+Trend and Counter-Trend Balance: Swing trading combines trend-following with counter-trend strategies based on market conditions. The dataset includes trend strength indicators, momentum oscillators, and mean reversion signals to identify optimal trade timing within intermediate-term market structure.
+
+Prediction Objective: Generate intermediate-term forecasts that identify swing trading opportunities with clear directional bias, appropriate risk levels, and regime-aware strategy selection for multi-day position management.

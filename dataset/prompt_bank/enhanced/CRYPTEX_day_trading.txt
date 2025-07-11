@@ -1,0 +1,11 @@
+Dataset description: The Intraday Bitcoin Trading dataset focuses on hourly price patterns and momentum signals optimized for same-day position management. This dataset emphasizes session-based patterns, intraday trend identification, and momentum continuation/reversal signals for positions held from hours to a single trading session. Features include session volatility analysis, momentum oscillators, and time-based pattern recognition.
+
+Intraday Pattern Recognition: Day trading requires identification of recurring intraday patterns including opening gaps, session highs/lows, lunch-hour consolidation, and closing momentum. The dataset captures these temporal patterns along with volume confirmation and momentum persistence signals.
+
+Session-Based Analysis: Different trading sessions (Asian, European, US) exhibit distinct characteristics. The dataset provides session-specific pattern recognition and volatility analysis to optimize entry timing and exit strategies within each session's unique behavior profile.
+
+Momentum and Reversal Signals: Intraday trading balances trend-following with mean reversion strategies. The dataset includes momentum oscillators, overbought/oversold indicators, and reversal pattern recognition to identify optimal trade entry and exit points within the trading day.
+
+Risk-Reward Optimization: Day trading requires favorable risk-reward ratios within compressed timeframes. Predictions should identify clear support/resistance levels, momentum targets, and stop-loss levels that provide positive expectancy for intraday position management.
+
+Prediction Objective: Generate intraday forecasts that identify momentum opportunities, reversal zones, and session-specific patterns for profitable same-day position management with clear risk parameters.

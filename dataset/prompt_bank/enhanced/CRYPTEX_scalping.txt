@@ -1,0 +1,9 @@
+Dataset description: The Ultra-High-Frequency Bitcoin dataset captures minute-level price movements and market microstructure for scalping applications. This dataset emphasizes order book dynamics, bid-ask spreads, volume flow patterns, and momentum oscillations optimized for rapid entry and exit strategies. Features include tick-level volatility measures, momentum persistence indicators, and microstructure signals that identify short-term directional bias lasting minutes to hours.
+
+Market Microstructure Focus: Scalping strategies require precise identification of short-term momentum shifts and liquidity patterns. The dataset captures order flow dynamics, volume-weighted price movements, and spread analysis to identify optimal entry and exit points for rapid trades.
+
+Risk Management Context: Ultra-short-term predictions carry unique risks including spread costs, slippage, and momentum reversals. Predictions should incorporate transaction cost analysis and provide tight stop-loss levels with favorable risk-reward ratios despite small price movements.
+
+Temporal Precision: Scalping operates on compressed timeframes where seconds matter. The prediction model should focus on immediate momentum continuation, support/resistance bounces, and volume confirmation signals that provide edge within 1-6 hour windows.
+
+Prediction Objective: Generate precise short-term forecasts optimized for high-frequency entry/exit decisions with emphasis on momentum persistence, volume confirmation, and microstructure edge identification.

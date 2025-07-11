@@ -1,0 +1,9 @@
+The Multi-Scale Bitcoin Time Series dataset provides hierarchical market data across multiple timeframes (15-minute, 1-hour, 4-hour, daily) with advanced temporal fusion capabilities. This dataset enables cross-timeframe analysis and prediction reconciliation, capturing both short-term market microstructure and long-term trend dynamics. Features include multi-resolution patch embeddings, temporal attention mechanisms, and hierarchical forecasting constraints that ensure mathematical consistency across prediction horizons.
+
+Hierarchical Forecasting Framework: The dataset supports bottom-up prediction reconciliation where short-term forecasts aggregate to match longer-term predictions. This approach ensures temporal consistency and leverages the natural hierarchy of market movements where minute-level actions contribute to hourly trends, which build into daily patterns.
+
+Cross-Timeframe Intelligence: Multi-scale attention mechanisms enable the model to identify relevant patterns across different time horizons. For example, daily support/resistance levels influence hourly price action, while 15-minute momentum patterns can signal intraday breakouts. This multi-resolution approach captures both the forest and the trees of market dynamics.
+
+Temporal Regime Adaptation: Different market regimes require different temporal focus. High volatility periods benefit from fine-grained 15-minute analysis, while stable accumulation phases are better understood through daily and weekly patterns. The dataset enables adaptive temporal resolution based on current market conditions.
+
+Prediction Strategy: Generate multi-horizon forecasts that maintain mathematical consistency across timeframes while adapting temporal resolution to current market volatility and regime characteristics. Focus on identifying multi-timeframe confluence signals that indicate high-probability directional moves.

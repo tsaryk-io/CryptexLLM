@@ -1,0 +1,9 @@
+The Market Regime-Aware Bitcoin dataset provides context-sensitive time series data that adapts to changing market conditions. The dataset automatically classifies market regimes into nine categories based on volatility and trend characteristics (bull/bear/sideways × low/medium/high volatility), enabling regime-specific pattern recognition. Each data point includes regime classification, volatility metrics, trend strength, and regime-appropriate feature weighting for adaptive forecasting across different market environments.
+
+Regime Classification System: Nine distinct market regimes capture the full spectrum of Bitcoin market conditions: bull markets with low/medium/high volatility indicating different phases of uptrends, bear markets with varying volatility levels representing different selling pressures, and sideways markets with different volatility profiles showing consolidation or distribution phases.
+
+Adaptive Pattern Recognition: Different regimes exhibit distinct behavioral patterns. Bull markets with low volatility suggest institutional accumulation, while high-volatility bull runs indicate retail FOMO. Bear markets with high volatility signal capitulation, while low-volatility bears suggest controlled distribution. Sideways markets require breakout or breakdown analysis.
+
+Regime-Specific Features: Feature importance and model weights adapt to current regime characteristics. For example, momentum indicators become more relevant in trending regimes, while mean reversion signals gain importance in sideways markets. Volume patterns and external sentiment carry different weights across regime types.
+
+Dynamic Prediction Framework: Generate forecasts that adapt prediction methodology to current regime characteristics while monitoring for regime transitions. Focus on regime-appropriate patterns and signals while maintaining awareness of potential regime changes that could invalidate current assumptions.

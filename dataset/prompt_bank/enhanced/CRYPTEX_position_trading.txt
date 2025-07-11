@@ -1,0 +1,15 @@
+Dataset description: The Long-Term Bitcoin Investment dataset captures major trend cycles and fundamental shifts optimized for strategic position allocation. This dataset emphasizes macro trend analysis, cycle pattern recognition, and fundamental value assessment for positions held from weeks to months or years. Features include long-term moving averages, cycle analysis, adoption metrics, and macro correlation patterns.
+
+Macro Trend Identification: Position trading requires identification of major trend cycles that can last months or years. The dataset includes long-term trend analysis, cycle pattern recognition, and momentum indicators that identify sustainable directional moves with significant profit potential over extended timeframes.
+
+Fundamental Integration: Long-term position trading benefits from fundamental analysis integration. The dataset incorporates network growth metrics, adoption indicators, regulatory environment analysis, and macroeconomic correlation patterns that drive long-term Bitcoin value appreciation or depreciation.
+
+Cycle Analysis Framework: Bitcoin exhibits cyclical behavior related to halving events, adoption cycles, and macroeconomic conditions. The dataset includes cycle analysis tools, seasonal patterns, and long-term rhythm recognition for identifying optimal accumulation and distribution phases.
+
+Strategic Risk Management: Position trading allows for significant drawdowns in exchange for major trend capture. Risk management focuses on position sizing, portfolio allocation, and long-term trend invalidation levels rather than short-term volatility management.
+
+Macro Environment Integration: Long-term Bitcoin performance correlates with broader macroeconomic conditions including monetary policy, inflation trends, and institutional adoption. The dataset integrates these macro factors for comprehensive long-term trend analysis.
+
+Value Investment Approach: Position trading combines technical analysis with value-based assessment of Bitcoin's long-term utility and adoption trajectory. The dataset includes fundamental metrics alongside technical indicators for comprehensive investment decision-making.
+
+Prediction Objective: Generate long-term forecasts that identify major trend directions, optimal accumulation/distribution zones, and strategic entry/exit points for significant position allocation with multi-month to multi-year time horizons.
