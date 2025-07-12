@@ -1,0 +1,43 @@
+================================================================================
+MODEL BENCHMARK COMPARISON REPORT
+================================================================================
+
+OVERALL RANKING:
+Rank  Model                     Dataset         Score    Sharpe   Win Rate  
+--------------------------------------------------------------------------------
+1     TimeLLM_Enhanced          CRYPTEX_TEST    0.348    -0.551    48.48%
+2     TimeLLM_Advanced          CRYPTEX_TEST    0.343    -0.551    47.98%
+3     TimeLLM_Baseline          CRYPTEX_TEST    0.322    -0.557    47.47%
+
+DETAILED PERFORMANCE COMPARISON:
+
+TimeLLM_Enhanced (CRYPTEX_TEST):
+  Overall Score: 0.348
+  MAPE: 2.10%
+  R²: 0.070
+  Sharpe Ratio: -0.551
+  Win Rate: 48.48%
+  Max Drawdown: -29.33%
+  Annual Return: -100.00%
+
+TimeLLM_Advanced (CRYPTEX_TEST):
+  Overall Score: 0.343
+  MAPE: 2.11%
+  R²: 0.070
+  Sharpe Ratio: -0.551
+  Win Rate: 47.98%
+  Max Drawdown: -31.16%
+  Annual Return: -100.00%
+
+TimeLLM_Baseline (CRYPTEX_TEST):
+  Overall Score: 0.322
+  MAPE: 3.14%
+  R²: -0.029
+  Sharpe Ratio: -0.557
+  Win Rate: 47.47%
+  Max Drawdown: -33.24%
+  Annual Return: -98.60%
+
+BEST PERFORMING MODEL: TimeLLM_Enhanced
+Dataset: CRYPTEX_TEST
+Key Strengths:

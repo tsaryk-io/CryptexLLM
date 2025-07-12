@@ -1,0 +1,107 @@
+[
+  {
+    "model_name": "TimeLLM_Baseline",
+    "dataset_type": "CRYPTEX_TEST",
+    "overall_score": 0.3221915893122332,
+    "evaluation_metrics": {
+      "mse": 14616497.728365615,
+      "mae": 1387.1324893664973,
+      "mape": 3.1431611649694573,
+      "r2": -0.028779920422803196,
+      "rmse": 3823.152851818197
+    },
+    "trading_metrics": {
+      "total_return": -0.09194937575273876,
+      "annualized_return": -0.9859819514016018,
+      "annualized_volatility": 1.7695221578218414,
+      "sharpe_ratio": -0.5572023763835073,
+      "sortino_ratio": -0.8929123783666835,
+      "calmar_ratio": -2.9666269474672804,
+      "max_drawdown": -0.3323579165366145,
+      "information_ratio": -1.5249953792903617,
+      "win_rate": 0.47474747474747475,
+      "profit_factor": 1.1041274173765578,
+      "avg_win": 0.015590425486265554,
+      "avg_loss": -0.014120132550742109,
+      "total_trades": 198,
+      "transaction_cost_impact": 0.057999999999999996
+    },
+    "risk_metrics": {
+      "max_drawdown": -0.3323579165366145,
+      "annualized_volatility": 1.7695221578218414,
+      "var_95": -0.02954309027598542,
+      "expected_shortfall": -1661.2008893784478
+    },
+    "regime_performance": {}
+  },
+  {
+    "model_name": "TimeLLM_Enhanced",
+    "dataset_type": "CRYPTEX_TEST",
+    "overall_score": 0.34801147662502663,
+    "evaluation_metrics": {
+      "mse": 13219713.196595581,
+      "mae": 929.7746783331795,
+      "mape": 2.102460120969354,
+      "r2": 0.06953254171054934,
+      "rmse": 3635.8923521737524
+    },
+    "trading_metrics": {
+      "total_return": -0.25151880671770066,
+      "annualized_return": -0.9999972869508051,
+      "annualized_volatility": 1.8147097408342152,
+      "sharpe_ratio": -0.5510508179071713,
+      "sortino_ratio": -0.9195838342745013,
+      "calmar_ratio": -3.4094802334416485,
+      "max_drawdown": -0.29329904222420816,
+      "information_ratio": -6.148415480342913,
+      "win_rate": 0.48484848484848486,
+      "profit_factor": 1.019781144855714,
+      "avg_win": 0.014967717137431934,
+      "avg_loss": -0.01467738172345761,
+      "total_trades": 198,
+      "transaction_cost_impact": 0.192
+    },
+    "risk_metrics": {
+      "max_drawdown": -0.29329904222420816,
+      "annualized_volatility": 1.8147097408342152,
+      "var_95": -0.02954309027598542,
+      "expected_shortfall": -1661.2008893784478
+    },
+    "regime_performance": {}
+  },
+  {
+    "model_name": "TimeLLM_Advanced",
+    "dataset_type": "CRYPTEX_TEST",
+    "overall_score": 0.3434104726047926,
+    "evaluation_metrics": {
+      "mse": 13213828.08876941,
+      "mae": 933.6923664415278,
+      "mape": 2.1141755863283147,
+      "r2": 0.06994676411003276,
+      "rmse": 3635.0829548676616
+    },
+    "trading_metrics": {
+      "total_return": -0.2907149963889444,
+      "annualized_return": -0.9999997488405302,
+      "annualized_volatility": 1.8151036304045987,
+      "sharpe_ratio": -0.5509325925471393,
+      "sortino_ratio": -0.9291988089763492,
+      "calmar_ratio": -3.2097504178458145,
+      "max_drawdown": -0.3115506250207666,
+      "information_ratio": -7.456259996395212,
+      "win_rate": 0.4797979797979798,
+      "profit_factor": 1.0141901164460967,
+      "avg_win": 0.014926794263924832,
+      "avg_loss": -0.014717944911779446,
+      "total_trades": 198,
+      "transaction_cost_impact": 0.20800000000000002
+    },
+    "risk_metrics": {
+      "max_drawdown": -0.3115506250207666,
+      "annualized_volatility": 1.8151036304045987,
+      "var_95": -0.02954309027598542,
+      "expected_shortfall": -1661.2008893784478
+    },
+    "regime_performance": {}
+  }
+]
