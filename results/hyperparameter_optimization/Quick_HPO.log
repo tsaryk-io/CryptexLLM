@@ -1,0 +1,33 @@
+2025-07-12 18:49:06,984 - utils.hyperparameter_optimization - INFO - Starting hyperparameter optimization: quick
+2025-07-12 18:49:06,984 - utils.hyperparameter_optimization - INFO - Running random search optimization
+2025-07-12 18:49:07,381 - utils.hyperparameter_optimization - ERROR - Trial 0 failed: Training failed: Traceback (most recent call last):
+  File "/Users/marytsaryk/Documents/projects/Time-LLM-Cryptex/run_main.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+2025-07-12 18:49:07,381 - utils.hyperparameter_optimization - INFO - Trial 0/5 completed
+2025-07-12 18:49:07,433 - utils.hyperparameter_optimization - ERROR - Trial 1 failed: Training failed: Traceback (most recent call last):
+  File "/Users/marytsaryk/Documents/projects/Time-LLM-Cryptex/run_main.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+2025-07-12 18:49:07,433 - utils.hyperparameter_optimization - INFO - Trial 1/5 completed
+2025-07-12 18:49:07,486 - utils.hyperparameter_optimization - ERROR - Trial 2 failed: Training failed: Traceback (most recent call last):
+  File "/Users/marytsaryk/Documents/projects/Time-LLM-Cryptex/run_main.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+2025-07-12 18:49:07,486 - utils.hyperparameter_optimization - INFO - Trial 2/5 completed
+2025-07-12 18:49:07,537 - utils.hyperparameter_optimization - ERROR - Trial 3 failed: Training failed: Traceback (most recent call last):
+  File "/Users/marytsaryk/Documents/projects/Time-LLM-Cryptex/run_main.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+2025-07-12 18:49:07,537 - utils.hyperparameter_optimization - INFO - Trial 3/5 completed
+2025-07-12 18:49:07,589 - utils.hyperparameter_optimization - ERROR - Trial 4 failed: Training failed: Traceback (most recent call last):
+  File "/Users/marytsaryk/Documents/projects/Time-LLM-Cryptex/run_main.py", line 2, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+2025-07-12 18:49:07,589 - utils.hyperparameter_optimization - INFO - Trial 4/5 completed
+2025-07-12 18:49:07,589 - utils.hyperparameter_optimization - INFO - Random search completed. Best value: inf
