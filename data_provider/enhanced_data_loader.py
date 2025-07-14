@@ -111,12 +111,11 @@ class Dataset_CRYPTEX_Enhanced(Dataset):
         
         # Feature selection
         if self.features == 'M' or self.features == 'MS':
-            # Use all features except timestamp
-            if 'timestamp' in df_processed.columns:
-                cols_data = [col for col in df_processed.columns if col != 'timestamp']
-            else:
-                cols_data = df_processed.columns[1:] if len(df_processed.columns) > 1 else df_processed.columns
+            # Use all features except timestamp and datetime columns
+            exclude_cols = ['timestamp', 'datetime']
+            cols_data = [col for col in df_processed.columns if col not in exclude_cols]
             df_data = df_processed[cols_data]
+            print(f"Selected {len(cols_data)} columns for training (excluded: {exclude_cols})")
         elif self.features == 'S':
             # Use only target feature
             df_data = df_processed[[self.target]]
@@ -324,7 +323,9 @@ class Dataset_CRYPTEX_MultiScale(Dataset):
         
         # Feature selection
         if self.features == 'M' or self.features == 'MS':
-            cols_data = [col for col in combined_df.columns if col != 'timestamp']
+            # Use all features except timestamp and datetime columns
+            exclude_cols = ['timestamp', 'datetime']
+            cols_data = [col for col in combined_df.columns if col not in exclude_cols]
             df_data = combined_df[cols_data]
         elif self.features == 'S':
             # Find target column (may have suffix)
