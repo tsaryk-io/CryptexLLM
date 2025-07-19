@@ -1,0 +1,30 @@
+{
+  "original_features": 60,
+  "selected_features": 20,
+  "reduction_percentage": 66.66666666666667,
+  "expected_speedup": 3.0,
+  "selection_time_seconds": 0.23832201957702637,
+  "memory_reduction_percentage": 59.70149253731343,
+  "selected_feature_list": [
+    "low",
+    "on_balance_volume",
+    "volume_sma_50",
+    "bb_width",
+    "price_volatility",
+    "macd_signal",
+    "volume_volatility",
+    "price_range",
+    "lower_shadow",
+    "body_size",
+    "volume",
+    "lag_volume_2",
+    "lag_volume_3",
+    "macd_histogram",
+    "lag_volume_1",
+    "lag_volume_7",
+    "lag_volume_9",
+    "lag_volume_6",
+    "lag_volume_4",
+    "lag_volume_10"
+  ]
+}
