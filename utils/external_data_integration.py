@@ -73,22 +73,190 @@ class SentimentDataSource(ExternalDataSource):
     
     def fetch_data(self, start_date: str, end_date: str) -> pd.DataFrame:
         """
-        Fetch sentiment data (simulated for now - replace with real APIs)
-        
-        Real implementations could use:
-        - Twitter API v2 for tweets
-        - Reddit API for r/Bitcoin, r/cryptocurrency posts
-        - News APIs like NewsAPI, Alpha Vantage News
-        - Crypto-specific sentiment providers like Santiment, LunarCrush
+        Fetch REAL sentiment data from multiple free APIs:
+        - Reddit API for r/Bitcoin, r/cryptocurrency discussions
+        - NewsAPI for crypto news sentiment (if API key provided)
+        - Fear & Greed Index for market sentiment
         """
         cache_key = f"sentiment_{start_date}_{end_date}"
         cached = self._get_cached_data(cache_key)
         if cached is not None:
             return cached
         
-        print(f"Fetching sentiment data from {start_date} to {end_date}")
+        print(f"Fetching REAL sentiment data from {start_date} to {end_date}")
         
-        # Simulate sentiment data (replace with real API calls)
+        # Use real sentiment APIs instead of simulation
+        try:
+            from utils.real_sentiment_apis import RealSentimentManager
+            
+            # Get NewsAPI key from config if available
+            newsapi_key = getattr(self.config, 'api_key', None)
+            
+            # Initialize real sentiment manager
+            sentiment_manager = RealSentimentManager(newsapi_key=newsapi_key)
+            
+            # Fetch real sentiment data
+            real_sentiment_data = sentiment_manager.fetch_all_sentiment_data(start_date, end_date)
+            
+            # Combine and process real data
+            if real_sentiment_data:
+                combined_df = self._process_real_sentiment_data(real_sentiment_data, start_date, end_date)
+                if not combined_df.empty:
+                    self._cache_data(cache_key, combined_df)
+                    return combined_df
+            
+            print("Falling back to simulated sentiment data")
+            
+        except ImportError:
+            print("Real sentiment APIs not available, using simulation")
+        except Exception as e:
+            print(f"Error with real sentiment APIs: {e}, falling back to simulation")
+        
+        # Fallback to simulation if real APIs fail
+        return self._create_simulated_sentiment_data(start_date, end_date)
+    
+    def _process_real_sentiment_data(self, real_sentiment_data: Dict[str, pd.DataFrame], 
+                                   start_date: str, end_date: str) -> pd.DataFrame:
+        """
+        Process and combine real sentiment data from multiple sources into a unified format
+        """
+        print("Processing real sentiment data from multiple sources...")
+        
+        # Create base time range for alignment
+        date_range = pd.date_range(start=start_date, end=end_date, freq='H')
+        base_df = pd.DataFrame({
+            'timestamp': date_range.astype(int) // 10**9,
+            'datetime': date_range
+        })
+        
+        combined_metrics = {}
+        
+        # 1. Process Reddit data
+        if 'reddit' in real_sentiment_data and not real_sentiment_data['reddit'].empty:
+            reddit_data = real_sentiment_data['reddit'].copy()
+            reddit_data['datetime'] = pd.to_datetime(reddit_data['timestamp'], unit='s')
+            
+            # Merge Reddit sentiment with base timeline
+            base_df = pd.merge_asof(
+                base_df.sort_values('datetime'),
+                reddit_data[['datetime', 'sentiment_score', 'post_count', 'total_score', 'total_comments']].sort_values('datetime'),
+                on='datetime',
+                direction='backward',
+                suffixes=('', '_reddit')
+            )
+            
+            combined_metrics['reddit_sentiment'] = base_df['sentiment_score'].fillna(0.5)
+            combined_metrics['reddit_volume'] = base_df['post_count'].fillna(0)
+            combined_metrics['reddit_engagement'] = base_df['total_comments'].fillna(0)
+            
+            print(f"  ✓ Processed Reddit sentiment: {len(reddit_data)} data points")
+        
+        # 2. Process News data
+        if 'news' in real_sentiment_data and not real_sentiment_data['news'].empty:
+            news_data = real_sentiment_data['news'].copy()
+            news_data['datetime'] = pd.to_datetime(news_data['timestamp'], unit='s')
+            
+            # Merge News sentiment with base timeline
+            base_df = pd.merge_asof(
+                base_df.sort_values('datetime'),
+                news_data[['datetime', 'news_sentiment', 'news_article_count']].sort_values('datetime'),
+                on='datetime',
+                direction='backward',
+                suffixes=('', '_news')
+            )
+            
+            combined_metrics['news_sentiment'] = base_df['news_sentiment'].fillna(0.5)
+            combined_metrics['news_volume'] = base_df['news_article_count'].fillna(0)
+            
+            print(f"  ✓ Processed News sentiment: {len(news_data)} data points")
+        
+        # 3. Process Fear & Greed Index
+        if 'fear_greed' in real_sentiment_data and not real_sentiment_data['fear_greed'].empty:
+            fg_data = real_sentiment_data['fear_greed'].copy()
+            fg_data['datetime'] = pd.to_datetime(fg_data['timestamp'], unit='s')
+            
+            # Merge Fear & Greed with base timeline
+            base_df = pd.merge_asof(
+                base_df.sort_values('datetime'),
+                fg_data[['datetime', 'fear_greed_normalized', 'fear_greed_index']].sort_values('datetime'),
+                on='datetime',
+                direction='backward',
+                suffixes=('', '_fg')
+            )
+            
+            combined_metrics['fear_greed_sentiment'] = base_df['fear_greed_normalized'].fillna(0.5)
+            combined_metrics['fear_greed_index'] = base_df['fear_greed_index'].fillna(50)
+            
+            print(f"  ✓ Processed Fear & Greed Index: {len(fg_data)} data points")
+        
+        # 4. Create aggregated sentiment metrics
+        sentiment_sources = []
+        if 'reddit_sentiment' in combined_metrics:
+            sentiment_sources.append(combined_metrics['reddit_sentiment'])
+        if 'news_sentiment' in combined_metrics:
+            sentiment_sources.append(combined_metrics['news_sentiment'])
+        if 'fear_greed_sentiment' in combined_metrics:
+            sentiment_sources.append(combined_metrics['fear_greed_sentiment'])
+        
+        if sentiment_sources:
+            # Weighted average sentiment (give more weight to Fear & Greed as it's official)
+            if len(sentiment_sources) == 3:  # All sources available
+                combined_metrics['sentiment_score'] = (
+                    0.3 * combined_metrics['reddit_sentiment'] +
+                    0.3 * combined_metrics['news_sentiment'] + 
+                    0.4 * combined_metrics['fear_greed_sentiment']
+                )
+            elif len(sentiment_sources) == 2:
+                combined_metrics['sentiment_score'] = np.mean(sentiment_sources, axis=0)
+            else:
+                combined_metrics['sentiment_score'] = sentiment_sources[0]
+        else:
+            combined_metrics['sentiment_score'] = np.full(len(base_df), 0.5)
+        
+        # 5. Create volume metrics
+        total_volume = np.zeros(len(base_df))
+        if 'reddit_volume' in combined_metrics:
+            total_volume += combined_metrics['reddit_volume']
+        if 'news_volume' in combined_metrics:
+            total_volume += combined_metrics['news_volume'] * 10  # Scale news volume
+        
+        combined_metrics['tweet_volume'] = np.maximum(total_volume, 100)  # Minimum base volume
+        combined_metrics['reddit_posts'] = combined_metrics.get('reddit_volume', np.zeros(len(base_df)))
+        combined_metrics['news_articles'] = combined_metrics.get('news_volume', np.zeros(len(base_df)))
+        
+        # 6. Create derived sentiment metrics
+        combined_metrics['bullish_ratio'] = np.clip(combined_metrics['sentiment_score'] * 1.2 - 0.1, 0, 1)
+        combined_metrics['bearish_ratio'] = 1 - combined_metrics['bullish_ratio']
+        
+        # Social dominance and engagement (estimated from real data availability)
+        combined_metrics['social_dominance'] = np.clip(
+            (combined_metrics['reddit_volume'] + combined_metrics.get('news_volume', 0)) / 1000, 0, 1
+        )
+        combined_metrics['engagement_rate'] = np.clip(
+            combined_metrics.get('reddit_engagement', 0) / np.maximum(combined_metrics['reddit_volume'], 1) / 50, 0, 1
+        )
+        
+        # 7. Create final DataFrame
+        final_df = pd.DataFrame({
+            'timestamp': base_df['timestamp'],
+            'sentiment_score': combined_metrics['sentiment_score'],
+            'tweet_volume': combined_metrics['tweet_volume'].astype(int),
+            'reddit_posts': combined_metrics['reddit_posts'].astype(int),
+            'news_articles': combined_metrics['news_articles'].astype(int),
+            'fear_greed_index': combined_metrics.get('fear_greed_index', np.full(len(base_df), 50)).astype(int),
+            'bullish_ratio': combined_metrics['bullish_ratio'],
+            'bearish_ratio': combined_metrics['bearish_ratio'],
+            'social_dominance': combined_metrics['social_dominance'],
+            'engagement_rate': combined_metrics['engagement_rate']
+        })
+        
+        print(f"  ✓ Combined {len(sentiment_sources)} sentiment sources into unified metrics")
+        print(f"  ✓ Generated {len(final_df)} hourly sentiment records")
+        
+        return final_df
+    
+    def _create_simulated_sentiment_data(self, start_date: str, end_date: str) -> pd.DataFrame:
+        """Create simulated sentiment data as fallback"""
         date_range = pd.date_range(start=start_date, end=end_date, freq='H')
         
         # Simulate realistic sentiment patterns
@@ -128,7 +296,6 @@ class SentimentDataSource(ExternalDataSource):
         # Convert timestamp to unix for consistency
         sentiment_df['timestamp'] = sentiment_df['timestamp'].astype(int) // 10**9
         
-        self._cache_data(cache_key, sentiment_df)
         return sentiment_df
     
     def fetch_real_twitter_sentiment(self, start_date: str, end_date: str) -> pd.DataFrame:

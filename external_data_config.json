@@ -1,0 +1,20 @@
+{
+  "sentiment": {
+    "enabled": true,
+    "api_key": "00319bd3d0c246d3b962416a95e5e8d3",
+    "rate_limit": 1.0,
+    "cache_duration": 3600
+  },
+  "macro": {
+    "enabled": true,
+    "api_key": null,
+    "rate_limit": 2.0,
+    "cache_duration": 86400
+  },
+  "onchain": {
+    "enabled": true,
+    "api_key": null,
+    "rate_limit": 1.0,
+    "cache_duration": 3600
+  }
+}
