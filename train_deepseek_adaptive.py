@@ -23,7 +23,9 @@ import sys
 import time
 import torch
 import json
+import pandas as pd
 from datetime import datetime
+
 
 # Add project root to path
 sys.path.append('.')
@@ -310,7 +312,7 @@ def main():
     
     # Check feature selection config
     if not os.path.exists(args.feature_selection_config):
-        print(f"⚠️  Feature selection config not found: {args.feature_selection_config}")
+        print(f"Feature selection config not found: {args.feature_selection_config}")
         print("Consider running feature selection first:")
         print("  python test_feature_selection_simple.py")
         
@@ -321,13 +323,13 @@ def main():
     try:
         results, analysis = run_adaptive_training(args)
         
-        print(f"\n🎉 ADAPTIVE LOSS TRAINING COMPLETED SUCCESSFULLY!")
-        print(f"✅ Model trained with adaptive loss combination: {args.loss_combination}")
-        print(f"✅ Best validation loss: {results['best_val_loss']:.6f}")
-        print(f"✅ Training time: {results['training_time_minutes']:.2f} minutes")
+        print(f"\nADAPTIVE LOSS TRAINING COMPLETED SUCCESSFULLY!")
+        print(f"Model trained with adaptive loss combination: {args.loss_combination}")
+        print(f"Best validation loss: {results['best_val_loss']:.6f}")
+        print(f"Training time: {results['training_time_minutes']:.2f} minutes")
         
         # Recommendations for next steps
-        print(f"\n🚀 NEXT STEPS:")
+        print(f"\nNEXT STEPS:")
         print(f"1. Run inference to test predictions:")
         print(f"   python inference.py --model_id {args.model_id}")
         print(f"2. Compare with baseline models")
@@ -338,7 +340,7 @@ def main():
         return True
         
     except Exception as e:
-        print(f"\n❌ Training failed: {e}")
+        print(f"\nTraining failed: {e}")
         import traceback
         traceback.print_exc()
         return False

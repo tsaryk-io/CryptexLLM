@@ -608,7 +608,7 @@ def main():
     
     # Run all tests
     if not VALIDATION_AVAILABLE:
-        print("❌ Validation system not available. Please install required dependencies.")
+        print("Validation system not available. Please install required dependencies.")
         return False
     
     # Test 1: Walk-forward validation
@@ -656,7 +656,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed >= total - 1:  # Allow one failure
-        print("\n🎉 Validation & Evaluation system is working correctly!")
+        print("\nValidation & Evaluation system is working correctly!")
         print("\nKey capabilities now available:")
         print("• Walk-forward validation for realistic time series testing")
         print("• Comprehensive trading performance metrics (Sharpe, Sortino, Calmar)")
@@ -675,7 +675,7 @@ def main():
         
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f"\n{total-passed} tests failed. Check errors above.")
         return False
 
 

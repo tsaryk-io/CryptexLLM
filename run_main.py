@@ -22,6 +22,14 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false" # mute the warning about tokenize
 
 from utils.tools import del_files, EarlyStopping, adjust_learning_rate, vali, load_content
 
+# MLFlow integration
+try:
+    from utils.mlflow_integration import setup_mlflow_for_timellm
+    MLFLOW_AVAILABLE = True
+except ImportError:
+    MLFLOW_AVAILABLE = False
+    print("MLFlow not available. Install mlflow to enable experiment tracking.")
+
 parser = argparse.ArgumentParser(description='Time-LLM')
 
 fix_seed = 2021
@@ -102,11 +110,29 @@ parser.add_argument('--llm_layers', type=int, default=6)
 parser.add_argument('--percent', type=int, default=100)
 parser.add_argument('--models_dir', default='/mnt/nfs/models', help='directory to save trained models')
 parser.add_argument('--num_tokens', type=int, default=1000, help='number of tokens for mapping layer')
+parser.add_argument('--enable_mlflow', action='store_true', help='enable MLFlow experiment tracking')
+parser.add_argument('--mlflow_experiment', type=str, default='TimeLLM-Cryptex', help='MLFlow experiment name')
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
 deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin)
+
+# Initialize MLFlow tracker if enabled
+mlflow_tracker = None
+if args.enable_mlflow and MLFLOW_AVAILABLE and accelerator.is_local_main_process:
+    try:
+        # Load external data configuration if available
+        external_data_config = None
+        if os.path.exists('external_data_config.json'):
+            with open('external_data_config.json', 'r') as f:
+                external_data_config = json.load(f)
+        
+        mlflow_tracker = setup_mlflow_for_timellm(args, external_data_config)
+        accelerator.print("MLFlow experiment tracking enabled")
+    except Exception as e:
+        accelerator.print(f"MLFlow initialization failed: {e}")
+        mlflow_tracker = None
 
 for ii in range(args.itr):
     # setting record of experiments
@@ -255,6 +281,17 @@ for ii in range(args.itr):
         final_test_loss = test_loss
         final_test_metric = test_metric
         
+        # Log training progress to MLFlow
+        if mlflow_tracker:
+            mlflow_tracker.log_training_progress(
+                epoch=epoch + 1,
+                train_loss=train_loss,
+                val_loss=vali_loss,
+                test_loss=test_loss,
+                metric_value=test_metric,
+                metric_name=args.metric
+            )
+        
         accelerator.print(
             "Epoch: {0} | {6} Train Loss: {1:.7f} Vali Loss: {2:.7f} Test Loss: {3:.7f} {5} Metric: {4:.7f}".format(
                 epoch + 1, train_loss, vali_loss, test_loss, test_metric, args.metric, args.loss))
@@ -293,6 +330,18 @@ for ii in range(args.itr):
         unwrapped_model = accelerator.unwrap_model(model)
         torch.save(unwrapped_model.state_dict(), model_path)
         accelerator.print(f'Model saved to {model_path}')
+        
+        # Log model to MLFlow
+        if mlflow_tracker:
+            try:
+                mlflow_tracker.log_model(
+                    model=unwrapped_model,
+                    model_name="time_llm_model",
+                    artifacts={"model_weights": model_path}
+                )
+                accelerator.print("Model logged to MLFlow")
+            except Exception as e:
+                accelerator.print(f"Failed to log model to MLFlow: {e}")
 
     # Existing cleanup code
     accelerator.wait_for_everyone()
@@ -310,5 +359,21 @@ if accelerator.is_local_main_process:
             args.loss.lower(): final_test_loss,
             args.metric.lower(): final_test_metric
         }
+        
+        # Log final metrics to MLFlow
+        if mlflow_tracker:
+            try:
+                final_metrics = {
+                    "final_test_loss": final_test_loss,
+                    f"final_test_{args.metric.lower()}": final_test_metric
+                }
+                mlflow_tracker.log_metrics(final_metrics)
+                
+                # End MLFlow run
+                mlflow_tracker.end_run("FINISHED")
+                accelerator.print("MLFlow run completed successfully")
+            except Exception as e:
+                accelerator.print(f"Error ending MLFlow run: {e}")
+        
         # Print metrics in a parseable format (/!\ Make sure the formatting agrees with the parsing in launch_experiment.py)
         print(f"FINAL_METRICS:{json.dumps(metrics)}")

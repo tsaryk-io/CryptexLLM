@@ -158,9 +158,9 @@ def test_data_validation():
         
         passed_checks = 0
         for result in validation_results:
-            status = "✓ PASS" if result.passed else "✗ FAIL"
-            severity_icon = {"info": "ℹ", "warning": "⚠", "error": "❌", "critical": "🚨"}
-            icon = severity_icon.get(result.severity, "•")
+            status = "PASS" if result.passed else "FAIL"
+            severity_icon = {"info": "INFO", "warning": "WARNING", "error": "ERROR", "critical": "CRITICAL"}
+            icon = severity_icon.get(result.severity, "")
             
             print(f"  {icon} {status} {result.check_name} (Score: {result.score:.2f})")
             print(f"    {result.message}")
@@ -563,7 +563,7 @@ def main():
     print(f"Data quality components available: {DATA_QUALITY_AVAILABLE}")
     
     if not DATA_QUALITY_AVAILABLE:
-        print("❌ Data quality system not available. Please install required dependencies.")
+        print("Data quality system not available. Please install required dependencies.")
         return False
     
     # Test 1: Data validation
@@ -616,7 +616,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed >= total - 1:  # Allow one failure
-        print("\n🎉 Data Quality Enhancement system is working correctly!")
+        print("\nData Quality Enhancement system is working correctly!")
         print("\nKey capabilities now available:")
         print("• Comprehensive data validation (8 validation checks)")
         print("• Advanced data profiling and statistical analysis")
@@ -637,7 +637,7 @@ def main():
         
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f" {total-passed} tests failed. Check errors above.")
         return False
 
 

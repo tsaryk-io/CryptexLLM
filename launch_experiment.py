@@ -175,6 +175,10 @@ def launch_experiment(args):
         '--metric', str(args.metric),
     ]
     
+    # Add MLFlow flag if enabled
+    if args.enable_mlflow:
+        cmd.append('--enable_mlflow')
+    
     
     # Always check if model already exists and ask for confirmation
     if check_model_exists(static_config['models_dir'], model_id):
@@ -310,6 +314,8 @@ def main():
                        help='loss fuction for training')
     parser.add_argument('--metric', type=str, default='MAE', 
                        help='metric for evaluation')
+    parser.add_argument('--enable_mlflow', action='store_true',
+                       help='Enable MLFlow experiment tracking')
     
     args = parser.parse_args()
     

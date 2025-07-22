@@ -44,7 +44,7 @@ def test_real_sentiment_integration():
                 print(sentiment_data.head(3)[['timestamp', 'sentiment_score', 'fear_greed_index', 'reddit_posts', 'news_articles']])
             
         else:
-            print("❌ Sentiment data source not found in manager")
+            print("Sentiment data source not found in manager")
             
         print("\n2. Testing full data integration...")
         
@@ -52,14 +52,14 @@ def test_real_sentiment_integration():
         all_data = manager.fetch_all_data(start_date, end_date)
         
         for source_name, data in all_data.items():
-            print(f"✓ {source_name}: {data.shape if not data.empty else 'No data'}")
+            print(f"{source_name}: {data.shape if not data.empty else 'No data'}")
             
-        print(f"\n✅ Real sentiment API integration test completed!")
-        print(f"   - Sentiment API integration: {'✓ Working' if not sentiment_data.empty else '❌ Using fallback'}")
+        print(f"\nReal sentiment API integration test completed!")
+        print(f"   - Sentiment API integration: {'✓ Working' if not sentiment_data.empty else 'Using fallback'}")
         print(f"   - Total data sources: {len([d for d in all_data.values() if not d.empty])}/3")
         
     except Exception as e:
-        print(f"❌ Test failed with error: {e}")
+        print(f"Test failed with error: {e}")
         import traceback
         traceback.print_exc()
 

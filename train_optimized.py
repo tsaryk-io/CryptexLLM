@@ -260,7 +260,7 @@ def main():
     
     # Check if feature selection results exist
     if not os.path.exists('./feature_selection_results/feature_selection_config.json'):
-        print("⚠️  Feature selection results not found!")
+        print("Feature selection results not found!")
         print("Please run test_feature_selection_simple.py first to generate optimized features")
         return
     
@@ -268,7 +268,7 @@ def main():
     with open('./feature_selection_results/performance_summary.json', 'r') as f:
         selection_results = json.load(f)
     
-    print("📊 Feature Selection Results:")
+    print("Feature Selection Results:")
     print(f"  Original features: {selection_results['original_features']}")
     print(f"  Selected features: {selection_results['selected_features']}")
     print(f"  Reduction: {selection_results['reduction_percentage']:.1f}%")
@@ -290,25 +290,25 @@ def main():
     print("OPTIMIZATION SUMMARY")
     print(f"{'=' * 80}")
     
-    print("✅ Correlation-based feature selection completed")
-    print("✅ Optimized data loader created")
-    print("✅ Training script generated")
-    print("✅ Performance benchmarks calculated")
+    print("Correlation-based feature selection completed")
+    print("Optimized data loader created")
+    print("Training script generated")
+    print("Performance benchmarks calculated")
     
-    print(f"\n🎯 EXPECTED IMPROVEMENTS:")
+    print(f"\nEXPECTED IMPROVEMENTS:")
     print(f"  • {selection_results['expected_speedup']:.1f}x faster training")
     print(f"  • {selection_results['reduction_percentage']:.1f}% fewer features")
     print(f"  • {selection_results['memory_reduction_percentage']:.1f}% memory savings")
     print(f"  • Maintained prediction accuracy with essential features")
     
-    print(f"\n🚀 NEXT STEPS:")
+    print(f"\nNEXT STEPS:")
     print("1. Run optimized training:")
     print("   python train_optimized_main.py")
     print("2. Compare training time vs original")
     print("3. Evaluate model performance metrics")
     print("4. Fine-tune hyperparameters if needed")
     
-    print(f"\n📝 FILES CREATED:")
+    print(f"\nFILES CREATED:")
     print("  • utils/feature_selection.py - Core feature selection")
     print("  • data_provider/enhanced_data_loader_optimized.py - Optimized data loader")
     print("  • train_optimized_main.py - Optimized training script")

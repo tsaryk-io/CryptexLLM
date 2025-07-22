@@ -465,4 +465,4 @@ if __name__ == "__main__":
     print(f"Weights: {result['weights']}")
     print(f"Individual losses: {[f'{k}:{v:.4f}' for k, v in result['individual_losses'].items()]}")
     
-    print("\n✅ Adaptive loss system test completed!")
+    print("\nAdaptive loss system test completed!")

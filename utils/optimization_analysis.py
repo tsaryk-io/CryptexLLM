@@ -712,7 +712,7 @@ class OptimizationAnalyzer:
         report.append("3. Focus future optimization on parameters with highest importance")
         
         if best_result.successful_trials / best_result.n_trials < 0.8:
-            report.append("4. ⚠️  Consider relaxing parameter constraints - high failure rate detected")
+            report.append("4. WARNING: Consider relaxing parameter constraints - high failure rate detected")
         
         # Save report
         report_text = "\n".join(report)

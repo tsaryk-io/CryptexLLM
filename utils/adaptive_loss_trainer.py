@@ -445,6 +445,6 @@ if __name__ == "__main__":
         model_id='test_adaptive'
     )
     
-    print("✅ Adaptive trainer created successfully!")
+    print("Adaptive trainer created successfully!")
     print(f"Loss functions: {trainer.adaptive_loss.loss_names}")
     print(f"Initial weights: {trainer.adaptive_loss.get_current_weights()}")

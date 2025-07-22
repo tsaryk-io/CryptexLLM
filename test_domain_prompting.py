@@ -307,9 +307,9 @@ def test_prompt_manager():
         )
         
         if prompt == prompt2:
-            print("✓ Prompt caching working correctly")
+            print("PASS: Prompt caching working correctly")
         else:
-            print("⚠ Prompt caching may not be working")
+            print("WARNING: Prompt caching may not be working")
         
         # Test performance tracking
         sample_metrics = {'mse': 0.001, 'mae': 0.02, 'mape': 1.5}
@@ -491,7 +491,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed >= total - 1:  # Allow one failure
-        print("\n🎉 Domain-Specific Prompting system is working correctly!")
+        print("\nDomain-Specific Prompting system is working correctly!")
         print("\nKey capabilities now available:")
         print("• Market regime-aware prompt generation (9 regime types)")
         print("• Trading strategy-specific templates (scalping, day, swing, position)")
@@ -513,7 +513,7 @@ def main():
         
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f"\n {total-passed} tests failed. Check errors above.")
         return False
 
 

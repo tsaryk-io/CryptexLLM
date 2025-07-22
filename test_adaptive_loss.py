@@ -380,21 +380,21 @@ def run_all_tests():
         print("TEST SUITE COMPLETED SUCCESSFULLY")
         print("=" * 80)
         
-        print(f"✅ All tests passed in {total_time:.2f} seconds")
-        print(f"✅ Basic functionality: Working")
-        print(f"✅ Loss combinations: {len(test_results['combinations'])} tested")
-        print(f"✅ Adaptation strategies: {len(test_results['strategies'])} tested")
-        print(f"✅ Training integration: Working")
-        print(f"✅ Recommendation system: Working")
+        print(f"All tests passed in {total_time:.2f} seconds")
+        print(f"Basic functionality: Working")
+        print(f"Loss combinations: {len(test_results['combinations'])} tested")
+        print(f"Adaptation strategies: {len(test_results['strategies'])} tested")
+        print(f"Training integration: Working")
+        print(f"Recommendation system: Working")
         
-        print(f"\n🎯 READY FOR PRODUCTION:")
+        print(f"\n READY FOR PRODUCTION:")
         print(f"  • Adaptive loss system fully functional")
         print(f"  • Multiple loss combinations available")
         print(f"  • Dynamic weight adaptation working")
         print(f"  • Training pipeline integration complete")
         print(f"  • Performance monitoring enabled")
         
-        print(f"\n🚀 NEXT STEPS:")
+        print(f"\n NEXT STEPS:")
         print(f"  1. Use in DeepSeek experiments:")
         print(f"     python train_deepseek_adaptive.py --loss_combination trading_focused")
         print(f"  2. Monitor loss evolution during training")
@@ -404,7 +404,7 @@ def run_all_tests():
         return True
         
     except Exception as e:
-        print(f"\n❌ Test failed: {e}")
+        print(f"\nTest failed: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -414,6 +414,6 @@ if __name__ == "__main__":
     success = run_all_tests()
     
     if success:
-        print(f"\n✨ Adaptive loss system ready for Time-LLM-Cryptex training!")
+        print(f"\nAdaptive loss system ready for Time-LLM-Cryptex training!")
     else:
-        print(f"\n⚠️  Please check the errors above and ensure all dependencies are available")
+        print(f"\nPlease check the errors above and ensure all dependencies are available")

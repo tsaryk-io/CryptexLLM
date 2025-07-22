@@ -6,6 +6,29 @@
   <component name="ChangeListManager">
     <list default="true" id="30fe4353-d376-486f-8143-8f43efdd3f4a" name="Changes" comment=" - data loader, workspace">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ADAPTIVE_LOSS_SYSTEM_SUMMARY.md" beforeDir="false" afterPath="$PROJECT_DIR$/ADAPTIVE_LOSS_SYSTEM_SUMMARY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HYPERPARAMETER_OPTIMIZATION_SUMMARY.md" beforeDir="false" afterPath="$PROJECT_DIR$/HYPERPARAMETER_OPTIMIZATION_SUMMARY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LEGAL.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo_adaptive_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_adaptive_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/launch_experiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/launch_experiment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_adaptive_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_adaptive_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_data_quality.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_data_quality.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_domain_prompting.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_domain_prompting.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_external_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_external_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_feature_selection.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_feature_selection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_feature_selection_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_feature_selection_simple.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_features.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_full_sentiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_full_sentiment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_hyperparameter_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_hyperparameter_optimization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_multiscale.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_multiscale.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_real_sentiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_real_sentiment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_validation_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_validation_evaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_validation_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_validation_simple.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_deepseek_adaptive.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_deepseek_adaptive.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_optimized.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_optimized.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/adaptive_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/adaptive_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/adaptive_loss_trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/adaptive_loss_trainer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +50,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.python train_deepseek_adaptive.py --loss_combination basic.executor": "Run",
     "Python.test_metrics.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -40,6 +64,36 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="python train_deepseek_adaptive.py --loss_combination basic" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Time-LLM-Cryptex" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="train_deepseek_adaptive.py" />
+      <option name="PARAMETERS" value="--loss_combination basic" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.python train_deepseek_adaptive.py --loss_combination basic" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -57,7 +111,7 @@
       <updated>1751488379806</updated>
       <workItem from="1751488381041" duration="8650000" />
       <workItem from="1752328684146" duration="17264000" />
-      <workItem from="1752419646219" duration="41814000" />
+      <workItem from="1752419646219" duration="47970000" />
     </task>
     <task id="LOCAL-00001" summary=" - data loader, workspace">
       <option name="closed" value="true" />
@@ -78,6 +132,7 @@
     <option name="LAST_COMMIT_MESSAGE" value=" - data loader, workspace" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Time_LLM_Cryptex$python_train_deepseek_adaptive_py___loss_combination_basic.coverage" NAME="python train_deepseek_adaptive.py --loss_combination basic Coverage Results" MODIFIED="1753211924194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Time_LLM_Cryptex$test_metrics.coverage" NAME="test_metrics Coverage Results" MODIFIED="1752004062454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
   </component>
 </project>

@@ -447,14 +447,14 @@ class TradingPerformanceAnalyzer:
             report.append("✗ Sharpe ratio below minimum threshold")
         
         if performance_metrics['win_rate'] >= self.config.min_win_rate:
-            report.append("✓ Win rate meets minimum threshold")
+            report.append("PASS: Win rate meets minimum threshold")
         else:
-            report.append("✗ Win rate below minimum threshold")
+            report.append("FAIL: Win rate below minimum threshold")
         
         if abs(performance_metrics['max_drawdown']) <= self.config.max_drawdown_threshold:
-            report.append("✓ Maximum drawdown within acceptable range")
+            report.append("PASS: Maximum drawdown within acceptable range")
         else:
-            report.append("⚠ Maximum drawdown exceeds threshold")
+            report.append("WARNING: Maximum drawdown exceeds threshold")
         
         # Regime performance
         if regime_performance:

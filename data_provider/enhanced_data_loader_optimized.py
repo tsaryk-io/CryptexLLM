@@ -417,4 +417,4 @@ if __name__ == "__main__":
     memory_mb = sys.getsizeof(dataset.data_x) / 1024**2
     print(f"Memory usage: {memory_mb:.1f} MB")
     
-    print("✅ Optimized data loader test completed successfully!")
+    print("Optimized data loader test completed successfully!")

@@ -1,10 +1,10 @@
-# 🎯 Adaptive Loss Function System for Time-LLM-Cryptex
+# Adaptive Loss Function System for Time-LLM-Cryptex
 
 ## Overview
 
 We've implemented a comprehensive adaptive loss function system that dynamically selects and combines multiple loss functions during training, optimizing for the best performance automatically. This system provides **"loss function selection on the fly"** with intelligent weighted averaging.
 
-## 🚀 Key Features
+## Key Features
 
 ### 1. **Dynamic Loss Combination**
 - **Multiple loss functions** combined with learnable weights
@@ -24,7 +24,7 @@ We've implemented a comprehensive adaptive loss function system that dynamically
 - **Performance analytics** and effectiveness metrics
 - **Adaptation history** logging and analysis
 
-## 📊 System Architecture
+## System Architecture
 
 ### Core Components
 
@@ -48,7 +48,7 @@ LossSelectionManager
 └── Information System (Detailed combination info)
 ```
 
-## 🎲 Available Loss Combinations
+## Available Loss Combinations
 
 ### 1. **Basic** (`basic`)
 ```python
@@ -85,7 +85,7 @@ losses = {'dlf': 'DLF', 'madl': 'MADL', 'asymmetric': 'ASYMMETRIC'}
 - **Best for**: Trend prediction, signal generation, directional accuracy
 - **Use case**: When direction matters more than absolute values
 
-## 🧪 Demonstration Results
+## Demonstration Results
 
 Our testing showed **highly effective adaptation** across all combinations:
 
@@ -96,12 +96,12 @@ Our testing showed **highly effective adaptation** across all combinations:
 | **Comprehensive** | **84.5%** | MSE: 25%, DLF: 32%, Trading: 42% | Highly Effective |
 
 ### Key Insights:
-- ✅ **Trading-focused combination** showed highest improvement (89.8%)
-- ✅ **Stable weight adaptation** (minimal oscillation)
-- ✅ **Automatic preference learning** (trading loss gained weight in comprehensive)
-- ✅ **Fast convergence** (significant improvement within 100 steps)
+- **Trading-focused combination** showed highest improvement (89.8%)
+- **Stable weight adaptation** (minimal oscillation)
+- **Automatic preference learning** (trading loss gained weight in comprehensive)
+- **Fast convergence** (significant improvement within 100 steps)
 
-## 🔧 How to Use
+## How to Use
 
 ### 1. **Quick Start - DeepSeek Training**
 ```bash
@@ -145,7 +145,7 @@ trainer = create_adaptive_trainer(
 results = trainer.train(train_loader, val_loader, epochs=20)
 ```
 
-## 📈 Performance Benefits
+## Performance Benefits
 
 ### 1. **Automatic Optimization**
 - **No manual tuning** required for loss function selection
@@ -162,7 +162,7 @@ results = trainer.train(train_loader, val_loader, epochs=20)
 - **Loss evolution plots** visualize training dynamics
 - **Performance analytics** validate adaptation effectiveness
 
-## 🎯 Integration with Feature Selection
+## Integration with Feature Selection
 
 The adaptive loss system works seamlessly with our correlation-based feature selection:
 
@@ -175,12 +175,12 @@ python train_deepseek_adaptive.py \
 ```
 
 **Combined Benefits:**
-- ✅ **3x training speedup** from feature selection (68+ → 20 features)
-- ✅ **89.8% loss improvement** from adaptive loss combination
-- ✅ **Optimal resource utilization** with reduced features and optimized loss
-- ✅ **Automatic adaptation** for both features and loss functions
+- **3x training speedup** from feature selection (68+ → 20 features)
+- **89.8% loss improvement** from adaptive loss combination
+- **Optimal resource utilization** with reduced features and optimized loss
+- **Automatic adaptation** for both features and loss functions
 
-## 🔬 Testing and Validation
+## Testing and Validation
 
 ### Files Created:
 - **`utils/adaptive_loss.py`** - Core adaptive loss implementation
@@ -190,13 +190,13 @@ python train_deepseek_adaptive.py \
 - **`train_deepseek_adaptive.py`** - Production DeepSeek training script
 
 ### Validation Results:
-- ✅ **Basic functionality**: All loss combinations working
-- ✅ **Adaptation strategies**: Performance-based, learning-based, hybrid tested
-- ✅ **Training integration**: Seamless integration with existing pipeline
-- ✅ **Monitoring system**: Real-time tracking and visualization working
-- ✅ **DeepSeek integration**: Ready for production training
+- **Basic functionality**: All loss combinations working
+- **Adaptation strategies**: Performance-based, learning-based, hybrid tested
+- **Training integration**: Seamless integration with existing pipeline
+- **Monitoring system**: Real-time tracking and visualization working
+- **DeepSeek integration**: Ready for production training
 
-## 🚀 Recommended Experiments
+## Recommended Experiments
 
 ### 1. **Compare Adaptive vs Fixed Loss**
 ```bash
@@ -231,7 +231,7 @@ python train_deepseek_adaptive.py --adaptation_strategy learning_based
 python train_deepseek_adaptive.py --adaptation_strategy hybrid
 ```
 
-## 📊 Expected Results
+## Expected Results
 
 ### Training Performance:
 - **Faster convergence** with optimized loss combinations
@@ -245,14 +245,14 @@ python train_deepseek_adaptive.py --adaptation_strategy hybrid
 - **Loss decomposition** understanding individual contributions
 - **Adaptation timing** optimal frequency analysis
 
-## 🎯 Production Readiness
+## Production Readiness
 
 ### Ready for Production:
-- ✅ **Complete implementation** with error handling
-- ✅ **Comprehensive testing** and validation
-- ✅ **Production training scripts** for DeepSeek
-- ✅ **Monitoring and visualization** tools
-- ✅ **Integration** with existing Time-LLM-Cryptex pipeline
+- **Complete implementation** with error handling
+- **Comprehensive testing** and validation
+- **Production training scripts** for DeepSeek
+- **Monitoring and visualization** tools
+- **Integration** with existing Time-LLM-Cryptex pipeline
 
 ### Next Steps:
 1. **Run DeepSeek experiments** with adaptive loss
@@ -261,7 +261,7 @@ python train_deepseek_adaptive.py --adaptation_strategy hybrid
 4. **Fine-tune adaptation parameters** based on results
 5. **Deploy best combinations** for live trading
 
-## 💡 Key Innovation
+## Key Innovation
 
 **"Loss Function Selection on the Fly"** - This system represents a significant advancement over traditional fixed loss approaches:
 
@@ -273,6 +273,6 @@ The combination of **correlation-based feature selection** (3x speedup) and **ad
 
 ---
 
-**🤖 Generated with [Claude Code](https://claude.ai/code)**
+** Generated with [Claude Code](https://claude.ai/code)**
 
 **Co-Authored-By: Claude <noreply@anthropic.com>**

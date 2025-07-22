@@ -285,10 +285,10 @@ def main():
     print(f"Data Loading:        {'✓ PASS' if success3 else '✗ FAIL'}")
     
     if all([success1, success2, success3]):
-        print("\n🎉 All tests passed! Ready to train with enhanced features.")
+        print("\nAll tests passed! Ready to train with enhanced features.")
         return True
     else:
-        print("\n❌ Some tests failed. Please check the errors above.")
+        print("\nSome tests failed. Please check the errors above.")
         return False
 
 if __name__ == "__main__":

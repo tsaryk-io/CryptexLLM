@@ -579,7 +579,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed >= total - 1:  # Allow one failure
-        print("\n🎉 Hyperparameter Optimization system is working correctly!")
+        print("\nHyperparameter Optimization system is working correctly!")
         print("\nKey capabilities validated:")
         print("• Comprehensive hyperparameter search spaces")
         print("• Advanced learning rate scheduling strategies")
@@ -600,7 +600,7 @@ def main():
         
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f"\n {total-passed} tests failed. Check errors above.")
         return False
 
 

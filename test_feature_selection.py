@@ -194,10 +194,10 @@ def test_feature_selection():
         print("\n" + "=" * 80)
         print("FEATURE SELECTION TEST COMPLETED SUCCESSFULLY")
         print("=" * 80)
-        print(f"✅ Reduced features from {original_feature_count} to {selected_feature_count}")
-        print(f"✅ Expected training speedup: {speedup_estimate:.1f}x")
-        print(f"✅ Memory reduction: {memory_reduction:.1f}%")
-        print(f"✅ Selection completed in {selection_time:.2f} seconds")
+        print(f"Reduced features from {original_feature_count} to {selected_feature_count}")
+        print(f"Expected training speedup: {speedup_estimate:.1f}x")
+        print(f"Memory reduction: {memory_reduction:.1f}%")
+        print(f"Selection completed in {selection_time:.2f} seconds")
         
         return True
         
@@ -229,7 +229,7 @@ def test_quick_selection():
     try:
         selected_features = quick_feature_selection(data_path, target_features=15)
         
-        print(f"\n✅ Quick selection completed!")
+        print(f"\nQuick selection completed!")
         print(f"Selected {len(selected_features)} features:")
         for i, feature in enumerate(selected_features[:10], 1):
             print(f"  {i:2d}. {feature}")
@@ -253,12 +253,12 @@ if __name__ == "__main__":
     success = test_feature_selection()
     
     if success:
-        print("\n🎯 Ready to use optimized features for faster training!")
+        print("\nReady to use optimized features for faster training!")
         print("\nNext steps:")
         print("1. Use the selected features in your training configuration")
         print("2. Update enhanced_data_loader.py to use selected features")
         print("3. Run training experiments with reduced computational cost")
         print("4. Compare training time and performance metrics")
     else:
-        print("\n❌ Feature selection test failed")
+        print("\nFeature selection test failed")
         print("Please check the error messages above and ensure all dependencies are available")

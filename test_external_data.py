@@ -523,7 +523,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed >= total - 1:  # Allow one failure
-        print("\n🎉 External data integration tests passed!")
+        print("\nExternal data integration tests passed!")
         print("\nThe system now includes:")
         print("• Sentiment analysis from social media and news")
         print("• Macro economic indicators (rates, inflation, stocks)")
@@ -540,7 +540,7 @@ def main():
         
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f"\n{total-passed} tests failed. Check errors above.")
         return False
 
 

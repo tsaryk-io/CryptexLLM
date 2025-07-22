@@ -344,9 +344,9 @@ def main():
     start_time = time.time()
     
     # Run demonstrations
-    print("🎯 CONCEPT: Dynamic loss function weighting for optimal training")
-    print("📈 BENEFIT: Automatically adjust to find best loss combination during training")
-    print("⚡ ADVANTAGE: No manual tuning - system learns what works best\n")
+    print("CONCEPT: Dynamic loss function weighting for optimal training")
+    print("BENEFIT: Automatically adjust to find best loss combination during training")
+    print("ADVANTAGE: No manual tuning - system learns what works best\n")
     
     # Main demo
     results = demo_loss_combinations()
@@ -364,24 +364,24 @@ def main():
     print("DEMONSTRATION COMPLETED")
     print(f"{'=' * 80}")
     
-    print(f"✅ Demonstrated adaptive loss concept in {demo_time:.2f} seconds")
-    print(f"✅ Showed {len(results)} different loss combinations")
-    print(f"✅ Simulated 100 training steps per combination")
-    print(f"✅ Demonstrated automatic weight adaptation")
+    print(f"Demonstrated adaptive loss concept in {demo_time:.2f} seconds")
+    print(f"Showed {len(results)} different loss combinations")
+    print(f"Simulated 100 training steps per combination")
+    print(f"Demonstrated automatic weight adaptation")
     
-    print(f"\n🎯 KEY INSIGHTS:")
+    print(f"KEY INSIGHTS:")
     for combo_name, summary in results.items():
         improvement = summary['loss_improvement_percent']
         print(f"  • {combo_name}: {improvement:.1f}% loss improvement through adaptation")
     
-    print(f"\n🚀 READY FOR REAL TRAINING:")
+    print(f"READY FOR REAL TRAINING:")
     print(f"  1. Use with DeepSeek model:")
     print(f"     python train_deepseek_adaptive.py --loss_combination trading_focused")
     print(f"  2. Monitor weight evolution during training")
     print(f"  3. Analyze adaptation effectiveness")
     print(f"  4. Compare with fixed loss function results")
     
-    print(f"\n💡 NEXT EXPERIMENTS:")
+    print(f"NEXT EXPERIMENTS:")
     print(f"  • Compare adaptive vs fixed loss on real Bitcoin data")
     print(f"  • Test different adaptation strategies")
     print(f"  • Analyze which combinations work best for different market conditions")

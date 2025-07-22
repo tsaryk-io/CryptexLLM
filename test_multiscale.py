@@ -550,7 +550,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed == total:
-        print("\n🎉 All multi-scale architecture tests passed!")
+        print("\nAll multi-scale architecture tests passed!")
         print("\nThe system now includes:")
         print("• Hierarchical forecasting across multiple timeframes")
         print("• Temporal attention mechanisms for relevant period focus")
@@ -559,7 +559,7 @@ def main():
         print("• Prediction reconciliation across temporal hierarchy")
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f"\n{total-passed} tests failed. Check errors above.")
         return False
 
 

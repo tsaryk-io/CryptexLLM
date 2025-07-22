@@ -352,4 +352,4 @@ if __name__ == "__main__":
         if not data.empty:
             print(f"  Sample: {data.head(2).to_dict()}")
     
-    print("\n✅ Real sentiment API test completed!")
+    print("\nReal sentiment API test completed!")

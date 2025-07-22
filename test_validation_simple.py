@@ -256,7 +256,7 @@ def main():
     test_results = []
     
     if not VALIDATION_AVAILABLE:
-        print("❌ Validation system not available. Please install required dependencies.")
+        print("Validation system not available. Please install required dependencies.")
         return False
     
     # Test 1: Trading performance analysis
@@ -288,7 +288,7 @@ def main():
     print(f"\nResults: {passed}/{total} tests passed")
     
     if passed == total:
-        print("\n🎉 Validation & Evaluation system core functionality is working!")
+        print("\nValidation & Evaluation system core functionality is working!")
         print("\nKey capabilities validated:")
         print("• Trading performance metrics calculation")
         print("• Risk-adjusted performance analysis")
@@ -296,7 +296,7 @@ def main():
         print("• Convenience functions for quick evaluation")
         return True
     else:
-        print(f"\n❌ {total-passed} tests failed. Check errors above.")
+        print(f"\n{total-passed} tests failed. Check errors above.")
         return False
 
 
