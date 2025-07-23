@@ -20,10 +20,10 @@ class Dataset_CRYPTEX_Enhanced(Dataset):
     """
     
     def __init__(self, root_path, flag='train', size=None,
-                 features='S', data_path='candlesticks-h.csv',
+                 features='S', data_path='candlesticks-D.csv',
                  target='close', scale=True, timeenc=0, freq='h', percent=100,
                  seasonal_patterns=None, enable_feature_engineering=True,
-                 feature_config=None):
+                 feature_config=None, use_enhanced_data=True):
         
         if size == None:
             self.seq_len = 24 * 4 * 4
@@ -46,8 +46,17 @@ class Dataset_CRYPTEX_Enhanced(Dataset):
         self.freq = freq
         self.percent = percent
         self.root_path = root_path
-        self.data_path = data_path
+        self.use_enhanced_data = use_enhanced_data
         self.enable_feature_engineering = enable_feature_engineering
+        
+        # Use enhanced dataset if available, otherwise fall back to basic
+        if self.use_enhanced_data and os.path.exists(os.path.join(root_path, 'candlesticks-D-enhanced.csv')):
+            self.data_path = 'candlesticks-D-enhanced.csv'
+            print("Using enhanced dataset with sentiment + macro + on-chain data")
+        else:
+            self.data_path = data_path
+            if self.use_enhanced_data:
+                print("Enhanced dataset not found, using basic dataset")
         
         # Initialize feature engineer
         if self.enable_feature_engineering:
