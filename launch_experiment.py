@@ -326,8 +326,8 @@ def main():
                        help='Stride (for short_term_forecast)')
     parser.add_argument('--auto_confirm', action='store_true',
                        help='Skip confirmation prompt and run immediately')
-    parser.add_argument('--loss', type=str, default='MSE',
-                       help='loss fuction for training')
+    parser.add_argument('--loss', type=str, default='comprehensive',
+                       help='adaptive loss function (comprehensive, trading_focused, directional_focused, basic, MSE)')
     parser.add_argument('--metric', type=str, default='MAE', 
                        help='metric for evaluation')
     parser.add_argument('--enable_mlflow', action='store_true',
