@@ -77,13 +77,14 @@ class Dataset_CRYPTEX_Enhanced(Dataset):
         # Read raw data
         df_raw = pd.read_csv(os.path.join(self.root_path, self.data_path))
         
-        # Ensure expected columns exist and are properly ordered
+        # Ensure expected columns exist for basic validation
         expected_cols = ['timestamp', 'open', 'close', 'high', 'low', 'volume']
         if not all(col in df_raw.columns for col in expected_cols):
             raise ValueError(f"CSV must contain columns: {expected_cols}")
         
-        # Reorder columns to ensure consistent format
-        df_raw = df_raw[expected_cols]
+        # Only reorder/filter columns if not using enhanced data (to preserve all enhanced features)
+        if not self.use_enhanced_data:
+            df_raw = df_raw[expected_cols]
         
         # Data quality checks and cleaning
         df_raw = self._clean_data(df_raw)
