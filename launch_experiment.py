@@ -17,15 +17,15 @@ def get_data_path(granularity, use_enhanced=False):
     """Get data path based on granularity"""
     if use_enhanced:
         granularity_to_file = {
-            'hourly': 'candlesticks-h-enhanced.csv',
-            'minute': 'candlesticks-Min-enhanced.csv',
-            'daily': 'candlesticks-D-enhanced.csv'
+            'hourly': 'cryptex/candlesticks-h-enhanced.csv',
+            'minute': 'cryptex/candlesticks-Min-enhanced.csv',
+            'daily': 'cryptex/candlesticks-D-enhanced.csv'
         }
     else:
         granularity_to_file = {
-            'hourly': 'candlesticks-h.csv',
-            'minute': 'candlesticks-Min.csv',
-            'daily': 'candlesticks-D.csv'
+            'hourly': 'cryptex/candlesticks-h.csv',
+            'minute': 'cryptex/candlesticks-Min.csv',
+            'daily': 'cryptex/candlesticks-D.csv'
         }
     return granularity_to_file[granularity]
 
@@ -141,7 +141,7 @@ def launch_experiment(args):
         'factor': '3',
         'itr': '1',
         'data': 'CRYPTEX_ENHANCED' if args.use_enhanced else 'CRYPTEX',
-        'root_path': './dataset/cryptex/',
+        'root_path': './dataset/',
         'target': 'close',
         'batch_size': '24',
         'model': 'TimeLLM',

@@ -53,6 +53,7 @@ class Dataset_CRYPTEX_Enhanced(Dataset):
         enhanced_path = 'cryptex/candlesticks-D-enhanced.csv'
         if self.use_enhanced_data and os.path.exists(os.path.join(root_path, enhanced_path)):
             self.data_path = enhanced_path
+            self.enable_feature_engineering = False  # Disable feature engineering for enhanced datasets
             print("Using enhanced dataset with sentiment + macro + on-chain data")
         else:
             self.data_path = data_path
