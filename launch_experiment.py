@@ -154,7 +154,6 @@ def launch_experiment(args):
     cmd = [
         'accelerate', 'launch',
         '--multi_gpu',
-        '--mixed_precision', 'fp16',
         '--num_processes', static_config['num_process'],
         '--main_process_port', static_config['master_port'],
         'run_main.py',
