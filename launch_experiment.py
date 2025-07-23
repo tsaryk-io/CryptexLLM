@@ -116,6 +116,16 @@ def launch_experiment(args):
     data_path = get_data_path(args.granularity, use_enhanced=args.use_enhanced)
     
     
+    # Dynamic configuration based on enhanced dataset
+    if args.use_enhanced:
+        enc_in = '26'  # Enhanced dataset has 26 features
+        dec_in = '26'
+        c_out = '1'    # Predicting single target (close price)
+    else:
+        enc_in = '7'   # Basic dataset dimensions
+        dec_in = '7'
+        c_out = '7'
+    
     # Static configuration
     static_config = {
         'master_port': '29500',
@@ -125,9 +135,9 @@ def launch_experiment(args):
         'comment': 'TimeLLM-Cryptex',
         'train_epochs': '10',
         'learning_rate': '0.01',
-        'enc_in': '7',
-        'dec_in': '7',
-        'c_out': '7',
+        'enc_in': enc_in,
+        'dec_in': dec_in,
+        'c_out': c_out,
         'factor': '3',
         'itr': '1',
         'data': 'CRYPTEX_ENHANCED' if args.use_enhanced else 'CRYPTEX',
