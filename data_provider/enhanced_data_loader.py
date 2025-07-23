@@ -50,13 +50,14 @@ class Dataset_CRYPTEX_Enhanced(Dataset):
         self.enable_feature_engineering = enable_feature_engineering
         
         # Use enhanced dataset if available, otherwise fall back to basic
-        if self.use_enhanced_data and os.path.exists(os.path.join(root_path, 'candlesticks-D-enhanced.csv')):
-            self.data_path = 'candlesticks-D-enhanced.csv'
+        enhanced_path = 'cryptex/candlesticks-D-enhanced.csv'
+        if self.use_enhanced_data and os.path.exists(os.path.join(root_path, enhanced_path)):
+            self.data_path = enhanced_path
             print("Using enhanced dataset with sentiment + macro + on-chain data")
         else:
             self.data_path = data_path
             if self.use_enhanced_data:
-                print("Enhanced dataset not found, using basic dataset")
+                print(f"Enhanced dataset not found at {os.path.join(root_path, enhanced_path)}, using basic dataset")
         
         # Initialize feature engineer
         if self.enable_feature_engineering:
