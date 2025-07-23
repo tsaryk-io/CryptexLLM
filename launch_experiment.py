@@ -141,7 +141,6 @@ def launch_experiment(args):
         'factor': '3',
         'itr': '1',
         'data': 'CRYPTEX_ENHANCED' if args.use_enhanced else 'CRYPTEX',
-        'enable_feature_engineering': 'False' if args.use_enhanced else 'True',
         'root_path': './dataset/cryptex/',
         'target': 'close',
         'batch_size': '24',
@@ -190,7 +189,6 @@ def launch_experiment(args):
         '--llm_dim', str(args.llm_dim),
         '--loss', str(args.loss),
         '--metric', str(args.metric),
-        '--enable_feature_engineering', static_config['enable_feature_engineering'],
     ]
     
     # Add MLFlow flag if enabled
