@@ -13,13 +13,20 @@ def generate_model_id(adaptive, llm_model, llm_layers, granularity, features, se
     return model_id
 
 
-def get_data_path(granularity):
+def get_data_path(granularity, use_enhanced=False):
     """Get data path based on granularity"""
-    granularity_to_file = {
-        'hourly': 'candlesticks-h.csv',
-        'minute': 'candlesticks-Min.csv',
-        'daily': 'candlesticks-D.csv'
-    }
+    if use_enhanced:
+        granularity_to_file = {
+            'hourly': 'candlesticks-h-enhanced.csv',
+            'minute': 'candlesticks-Min-enhanced.csv',
+            'daily': 'candlesticks-D-enhanced.csv'
+        }
+    else:
+        granularity_to_file = {
+            'hourly': 'candlesticks-h.csv',
+            'minute': 'candlesticks-Min.csv',
+            'daily': 'candlesticks-D.csv'
+        }
     return granularity_to_file[granularity]
 
 # Prevent overriding
@@ -106,7 +113,7 @@ def launch_experiment(args):
     
     # Generate dynamic parameters
     model_id = generate_model_id(args.adaptive, args.llm_model, args.llm_layers, args.granularity, args.features, args.seq_len, args.pred_len, args.patch_len, args.stride, args.num_tokens)
-    data_path = get_data_path(args.granularity)
+    data_path = get_data_path(args.granularity, use_enhanced=args.use_enhanced)
     
     
     # Static configuration
@@ -123,7 +130,7 @@ def launch_experiment(args):
         'c_out': '7',
         'factor': '3',
         'itr': '1',
-        'data': 'CRYPTEX',
+        'data': 'CRYPTEX_ENHANCED' if args.use_enhanced else 'CRYPTEX',
         'root_path': './dataset/cryptex/',
         'target': 'close',
         'batch_size': '24',
@@ -316,6 +323,8 @@ def main():
                        help='metric for evaluation')
     parser.add_argument('--enable_mlflow', action='store_true',
                        help='Enable MLFlow experiment tracking')
+    parser.add_argument('--use_enhanced', action='store_true',
+                       help='Use enhanced dataset with sentiment + macro + on-chain features')
     
     args = parser.parse_args()
     
