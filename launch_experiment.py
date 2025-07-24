@@ -156,10 +156,13 @@ def launch_experiment(args):
         '--multi_gpu'
     ]
     
-    # Disable mixed precision for QWEN due to gradient overflow issues
+    # Handle different precision requirements for different models
     if args.llm_model == 'QWEN':
         cmd.extend(['--mixed_precision', 'no'])
         print("INFO: Disabling mixed precision for QWEN due to gradient instability")
+    elif args.llm_model == 'GEMMA':
+        cmd.extend(['--mixed_precision', 'bf16'])
+        print("INFO: Using BF16 mixed precision for GEMMA")
     else:
         cmd.extend(['--mixed_precision', 'fp16'])
     
@@ -229,13 +232,19 @@ def launch_experiment(args):
     print(f"Stride: {args.stride}")
     print(f"Data Path: {data_path}")
     
-    # Show QWEN-specific modifications
+    # Show model-specific modifications
     if args.llm_model == 'QWEN':
         print("\n--- QWEN-Specific Configuration ---")
         print("• Mixed precision: DISABLED (fp32 training)")
         print("• Learning rate: 0.001 (reduced for stability)")
         print("• DeepSpeed config: ds_config_zero2_fp32.json")
         print("• Automatic mixed precision: DISABLED")
+        print("------------------------------------")
+    elif args.llm_model == 'GEMMA':
+        print("\n--- GEMMA-Specific Configuration ---")
+        print("• Mixed precision: BF16 (bfloat16 training)")
+        print("• DeepSpeed config: ds_config_zero2_bf16.json")
+        print("• Native BF16 support for GEMMA weights")
         print("------------------------------------")
     
     print()
