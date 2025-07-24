@@ -52,7 +52,7 @@ log "Testing 5 LLM models with adaptive loss"
 log "Main log: $MAIN_LOG"
 
 # Common parameters for all experiments
-COMMON_PARAMS="--llm_layers 6 --num_tokens 1000 --seq_len 32 --pred_len 7 --patch_len 1 --features MS --granularity daily --enable_mlflow --use_enhanced --loss comprehensive --auto_confirm"
+COMMON_PARAMS="--task_name long_term_forecast --llm_layers 6 --num_tokens 1000 --seq_len 32 --pred_len 7 --patch_len 1 --features MS --granularity daily --enable_mlflow --use_enhanced --loss comprehensive --auto_confirm"
 
 # Experiment 1: LLAMA + Comprehensive Adaptive Loss
 run_experiment "exp1_llama_adaptive" \
