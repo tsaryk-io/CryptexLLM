@@ -115,7 +115,14 @@ parser.add_argument('--mlflow_experiment', type=str, default='TimeLLM-Cryptex', 
 
 args = parser.parse_args()
 ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
-deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
+
+# Use fp32 DeepSpeed config for QWEN to avoid gradient overflow
+if args.llm_model == 'QWEN':
+    deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2_fp32.json')
+    print("INFO: Using fp32 DeepSpeed configuration for QWEN")
+else:
+    deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
+
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin)
 
 # Initialize MLFlow tracker if enabled
@@ -198,8 +205,12 @@ for ii in range(args.itr):
     train_loader, vali_loader, test_loader, model, model_optim, scheduler = accelerator.prepare(
         train_loader, vali_loader, test_loader, model, model_optim, scheduler)
 
-    if args.use_amp:
+    # Disable AMP for QWEN to avoid gradient overflow
+    if args.use_amp and args.llm_model != 'QWEN':
         scaler = torch.cuda.amp.GradScaler()
+    elif args.llm_model == 'QWEN':
+        args.use_amp = False
+        print("INFO: Disabling automatic mixed precision for QWEN")
 
     # Variables to track final metrics
     final_test_loss = None

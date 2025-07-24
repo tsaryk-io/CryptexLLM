@@ -134,7 +134,7 @@ def launch_experiment(args):
         'd_ff': '128',
         'comment': 'TimeLLM-Cryptex',
         'train_epochs': '10',
-        'learning_rate': '0.01',
+        'learning_rate': '0.001' if args.llm_model == 'QWEN' else '0.01',  # Lower learning rate for QWEN
         'enc_in': enc_in,
         'dec_in': dec_in,
         'c_out': c_out,
@@ -154,7 +154,16 @@ def launch_experiment(args):
     cmd = [
         'accelerate', 'launch',
         '--multi_gpu',
-        '--mixed_precision', 'fp16',
+    ]
+    
+    # Disable mixed precision for QWEN due to gradient overflow issues
+    if args.llm_model == 'QWEN':
+        cmd.extend(['--mixed_precision', 'no'])
+        print("INFO: Disabling mixed precision for QWEN due to gradient instability")
+    else:
+        cmd.extend(['--mixed_precision', 'fp16'])
+    
+    cmd.extend([
         '--num_processes', static_config['num_process'],
         '--main_process_port', static_config['master_port'],
         'run_main.py',
@@ -219,6 +228,16 @@ def launch_experiment(args):
     print(f"Patch Length: {args.patch_len}")
     print(f"Stride: {args.stride}")
     print(f"Data Path: {data_path}")
+    
+    # Show QWEN-specific modifications
+    if args.llm_model == 'QWEN':
+        print("\n--- QWEN-Specific Configuration ---")
+        print("• Mixed precision: DISABLED (fp32 training)")
+        print("• Learning rate: 0.001 (reduced for stability)")
+        print("• DeepSpeed config: ds_config_zero2_fp32.json")
+        print("• Automatic mixed precision: DISABLED")
+        print("------------------------------------")
+    
     print()
     
     # Ask for confirmation
