@@ -153,7 +153,7 @@ def launch_experiment(args):
     # Build the command
     cmd = [
         'accelerate', 'launch',
-        '--multi_gpu',
+        '--multi_gpu'
     ]
     
     # Disable mixed precision for QWEN due to gradient overflow issues
@@ -198,8 +198,8 @@ def launch_experiment(args):
         '--num_tokens', str(args.num_tokens),
         '--llm_dim', str(args.llm_dim),
         '--loss', str(args.loss),
-        '--metric', str(args.metric),
-    ]
+        '--metric', str(args.metric)
+    ])
     
     # Add MLFlow flag if enabled
     if args.enable_mlflow:
