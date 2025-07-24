@@ -28,6 +28,10 @@ def get_loss_function(loss_name):
         return TradingLoss()
     elif loss_name == 'ROBUST':
         return RobustLoss()
+    elif loss_name in ['COMPREHENSIVE', 'TRADING_FOCUSED', 'DIRECTIONAL_FOCUSED', 'BASIC']:
+        # Import adaptive loss here to avoid circular imports
+        from utils.adaptive_loss import create_adaptive_loss
+        return create_adaptive_loss(combination=loss_name.lower())
     else:
         raise ValueError(f"Unsupported loss type: {loss_name}")
 

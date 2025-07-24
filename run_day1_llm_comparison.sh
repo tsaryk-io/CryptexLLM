@@ -54,25 +54,21 @@ log "Main log: $MAIN_LOG"
 # Common parameters for all experiments
 COMMON_PARAMS="--task_name long_term_forecast --llm_layers 6 --num_tokens 1000 --seq_len 32 --pred_len 7 --patch_len 1 --features MS --granularity daily --enable_mlflow --use_enhanced --loss comprehensive --auto_confirm"
 
-# Experiment 1: LLAMA + Comprehensive Adaptive Loss
-run_experiment "exp1_llama_adaptive" \
-"python launch_experiment.py --adaptive exp1_llama_adaptive --llm_model LLAMA $COMMON_PARAMS"
+# Experiment 1: QWEN + Comprehensive Adaptive Loss
+run_experiment "exp1_qwen_adaptive" \
+"python launch_experiment.py --adaptive exp1_qwen_adaptive --llm_model QWEN $COMMON_PARAMS"
 
-# Experiment 2: LLAMA3.1 + Comprehensive Adaptive Loss
-run_experiment "exp2_llama31_adaptive" \
-"python launch_experiment.py --adaptive exp2_llama31_adaptive --llm_model LLAMA3.1 $COMMON_PARAMS"
+# Experiment 2: MISTRAL + Comprehensive Adaptive Loss
+run_experiment "exp2_mistral_adaptive" \
+"python launch_experiment.py --adaptive exp2_mistral_adaptive --llm_model MISTRAL $COMMON_PARAMS"
 
-# Experiment 3: QWEN + Comprehensive Adaptive Loss
-run_experiment "exp3_qwen_adaptive" \
-"python launch_experiment.py --adaptive exp3_qwen_adaptive --llm_model QWEN $COMMON_PARAMS"
+# Experiment 3: GEMMA + Comprehensive Adaptive Loss
+run_experiment "exp3_gemma_adaptive" \
+"python launch_experiment.py --adaptive exp3_gemma_adaptive --llm_model GEMMA $COMMON_PARAMS"
 
-# Experiment 4: MISTRAL + Comprehensive Adaptive Loss
-run_experiment "exp4_mistral_adaptive" \
-"python launch_experiment.py --adaptive exp4_mistral_adaptive --llm_model MISTRAL $COMMON_PARAMS"
-
-# Experiment 5: GEMMA + Comprehensive Adaptive Loss
-run_experiment "exp5_gemma_adaptive" \
-"python launch_experiment.py --adaptive exp5_gemma_adaptive --llm_model GEMMA $COMMON_PARAMS"
+# Experiment 4: GPT2 + Comprehensive Adaptive Loss (as backup)
+run_experiment "exp4_gpt2_adaptive" \
+"python launch_experiment.py --adaptive exp4_gpt2_adaptive --llm_model GPT2 $COMMON_PARAMS"
 
 log "Day 1 LLM Architecture Comparison Complete"
 log "Experiment Status Summary:"
