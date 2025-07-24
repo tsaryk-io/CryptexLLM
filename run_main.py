@@ -238,7 +238,14 @@ for ii in range(args.itr):
                     outputs = outputs[:, -args.pred_len:, f_dim:]
                     batch_y = batch_y[:, -args.pred_len:, f_dim:].to(accelerator.device)
                     loss = criterion(outputs, batch_y)
-                    train_loss.append(loss.item())
+                    
+                    # Handle adaptive loss (returns dict) vs regular loss (returns tensor)
+                    if isinstance(loss, dict):
+                        total_loss = loss['total_loss']
+                        train_loss.append(total_loss.item())
+                        loss = total_loss  # Use total loss for backward pass
+                    else:
+                        train_loss.append(loss.item())
             else:
                 if args.output_attention:
                     outputs = model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
@@ -249,11 +256,20 @@ for ii in range(args.itr):
                 outputs = outputs[:, -args.pred_len:, f_dim:]
                 batch_y = batch_y[:, -args.pred_len:, f_dim:]
                 loss = criterion(outputs, batch_y)
-                train_loss.append(loss.item())
+                
+                # Handle adaptive loss (returns dict) vs regular loss (returns tensor)
+                if isinstance(loss, dict):
+                    total_loss = loss['total_loss']
+                    train_loss.append(total_loss.item())
+                    loss = total_loss  # Use total loss for backward pass
+                else:
+                    train_loss.append(loss.item())
 
             if (i + 1) % 100 == 0:
+                # Handle loss display for both adaptive and regular loss
+                loss_value = loss.item() if hasattr(loss, 'item') else loss['total_loss'].item()
                 accelerator.print(
-                    "\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss.item()))
+                    "\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss_value))
                 speed = (time.time() - time_now) / iter_count
                 left_time = speed * ((args.train_epochs - epoch) * train_steps - i)
                 accelerator.print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
