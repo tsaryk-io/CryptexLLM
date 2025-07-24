@@ -128,8 +128,10 @@ class AdaptiveLossFunction(nn.Module):
         for i, name in enumerate(self.loss_names):
             combined_loss += weights[i] * individual_losses[name]
         
-        # Scale down loss for numerical stability in fp16
-        combined_loss = combined_loss * 0.1
+        # Scale down loss for numerical stability in fp16 (model-specific)
+        # QWEN needs more aggressive scaling due to gradient instability
+        scale_factor = getattr(self, 'scale_factor', 0.1)
+        combined_loss = combined_loss * scale_factor
         
         # Update step count
         self.step_count += 1

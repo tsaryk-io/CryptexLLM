@@ -192,7 +192,7 @@ for ii in range(args.itr):
                                             epochs=args.train_epochs,
                                             max_lr=args.learning_rate)
 
-    criterion = get_loss_function(args.loss)
+    criterion = get_loss_function(args.loss, args.llm_model)
     metric_func = get_metric_function(args.metric)
 
     train_loader, vali_loader, test_loader, model, model_optim, scheduler = accelerator.prepare(
