@@ -34,11 +34,11 @@ def get_loss_function(loss_name, model_name=None):
         
         # Model-specific scaling factors for gradient stability
         model_scaling = {
-            'QWEN': 0.01,    # More aggressive scaling for QWEN
+            'QWEN': 0.001,   # Very aggressive scaling for QWEN (still overflows)
             'MISTRAL': 0.1,  # Works well
             'LLAMA': 0.1,    # Works well
             'GEMMA': 0.05,   # Conservative for gated model
-            'GPT2': 0.1,     # Standard scaling
+            'GPT2': 0.05,    # More aggressive scaling needed
             'DEEPSEEK': 0.1  # Standard scaling
         }
         
