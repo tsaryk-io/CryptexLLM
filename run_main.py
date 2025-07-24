@@ -241,7 +241,7 @@ for ii in range(args.itr):
                     
                     # Handle adaptive loss (returns dict) vs regular loss (returns tensor)
                     if isinstance(loss, dict):
-                        total_loss = loss['total_loss']
+                        total_loss = loss['combined_loss']
                         train_loss.append(total_loss.item())
                         loss = total_loss  # Use total loss for backward pass
                     else:
@@ -259,7 +259,7 @@ for ii in range(args.itr):
                 
                 # Handle adaptive loss (returns dict) vs regular loss (returns tensor)
                 if isinstance(loss, dict):
-                    total_loss = loss['total_loss']
+                    total_loss = loss['combined_loss']
                     train_loss.append(total_loss.item())
                     loss = total_loss  # Use total loss for backward pass
                 else:
@@ -267,7 +267,7 @@ for ii in range(args.itr):
 
             if (i + 1) % 100 == 0:
                 # Handle loss display for both adaptive and regular loss
-                loss_value = loss.item() if hasattr(loss, 'item') else loss['total_loss'].item()
+                loss_value = loss.item() if hasattr(loss, 'item') else loss['combined_loss'].item()
                 accelerator.print(
                     "\titers: {0}, epoch: {1} | loss: {2:.7f}".format(i + 1, epoch + 1, loss_value))
                 speed = (time.time() - time_now) / iter_count

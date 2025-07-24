@@ -6,29 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="30fe4353-d376-486f-8143-8f43efdd3f4a" name="Changes" comment=" - data loader, workspace">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ADAPTIVE_LOSS_SYSTEM_SUMMARY.md" beforeDir="false" afterPath="$PROJECT_DIR$/ADAPTIVE_LOSS_SYSTEM_SUMMARY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HYPERPARAMETER_OPTIMIZATION_SUMMARY.md" beforeDir="false" afterPath="$PROJECT_DIR$/HYPERPARAMETER_OPTIMIZATION_SUMMARY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LEGAL.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_adaptive_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_adaptive_loss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/launch_experiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/launch_experiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_adaptive_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_adaptive_loss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_data_quality.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_data_quality.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_domain_prompting.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_domain_prompting.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_external_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_external_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_feature_selection.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_feature_selection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_feature_selection_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_feature_selection_simple.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_features.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_features.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_full_sentiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_full_sentiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_hyperparameter_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_hyperparameter_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_multiscale.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_multiscale.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_real_sentiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_real_sentiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_validation_evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_validation_evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_validation_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_validation_simple.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_deepseek_adaptive.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_deepseek_adaptive.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_optimized.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_optimized.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/adaptive_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/adaptive_loss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/adaptive_loss_trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/adaptive_loss_trainer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +88,7 @@
       <updated>1751488379806</updated>
       <workItem from="1751488381041" duration="8650000" />
       <workItem from="1752328684146" duration="17264000" />
-      <workItem from="1752419646219" duration="47970000" />
+      <workItem from="1752419646219" duration="55970000" />
     </task>
     <task id="LOCAL-00001" summary=" - data loader, workspace">
       <option name="closed" value="true" />
