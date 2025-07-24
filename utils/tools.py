@@ -176,7 +176,11 @@ def vali(args, accelerator, model, vali_data, vali_loader, criterion, metric_fun
 
             metric_loss = metric_func(pred, true)
 
-            total_loss.append(loss.item())
+            # Handle adaptive loss (returns dict) vs regular loss (returns tensor)
+            if isinstance(loss, dict):
+                total_loss.append(loss['combined_loss'].item())
+            else:
+                total_loss.append(loss.item())
             total_metric_loss.append(metric_loss.item())
 
     total_loss = np.average(total_loss)
