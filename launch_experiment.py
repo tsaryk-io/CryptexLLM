@@ -161,8 +161,8 @@ def launch_experiment(args):
         cmd.extend(['--mixed_precision', 'no'])
         print("INFO: Disabling mixed precision for QWEN due to gradient instability")
     elif args.llm_model == 'GEMMA':
-        cmd.extend(['--mixed_precision', 'bf16'])
-        print("INFO: Using BF16 mixed precision for GEMMA")
+        cmd.extend(['--mixed_precision', 'fp16'])
+        print("INFO: Using FP16 mixed precision for GEMMA (BF16 not supported)")
     else:
         cmd.extend(['--mixed_precision', 'fp16'])
     
@@ -242,9 +242,9 @@ def launch_experiment(args):
         print("------------------------------------")
     elif args.llm_model == 'GEMMA':
         print("\n--- GEMMA-Specific Configuration ---")
-        print("• Mixed precision: BF16 (bfloat16 training)")
-        print("• DeepSpeed config: ds_config_zero2_bf16.json")
-        print("• Native BF16 support for GEMMA weights")
+        print("• Mixed precision: FP16 (BF16 not supported on this system)")
+        print("• DeepSpeed config: ds_config_zero2.json")
+        print("• Standard FP16 training for GEMMA")
         print("------------------------------------")
     
     print()

@@ -120,9 +120,6 @@ ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
 if args.llm_model == 'QWEN':
     deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2_fp32.json')
     print("INFO: Using fp32 DeepSpeed configuration for QWEN")
-elif args.llm_model == 'GEMMA':
-    deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2_bf16.json')
-    print("INFO: Using bf16 DeepSpeed configuration for GEMMA")
 else:
     deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
 
