@@ -18,16 +18,29 @@ def parse_model_id(model_id):
     """
     Parses the model_id string to extract hyperparameters.
     Handles both adaptive and regular model naming patterns.
+    Expected formats:
+    - {prefix}_{llm_model}_L{layers}_{granularity}_{features}_seq{seq_len}_pred{pred_len}_p{patch_len}_s{stride}_v{num_tokens}
     """
-    # Try adaptive pattern first: {adaptive_type}_{llm_model}_L{layers}...
-    adaptive_pattern = re.compile(r'(.+?)_(.+?)_L(\d+)_(.+?)_([A-Z]+)_seq(\d+)_pred(\d+)_p(\d+)_s(\d+)_v(\d+)')
-    match = adaptive_pattern.match(model_id)
+    # Updated pattern to handle prefixes like qwen_regular_, llama31_adaptive_, etc.
+    pattern = re.compile(r'(.+?)_([A-Z0-9.]+)_L(\d+)_(.+?)_([A-Z]+)_seq(\d+)_pred(\d+)_p(\d+)_s(\d+)_v(\d+)')
+    match = pattern.match(model_id)
     
     if match:
         groups = match.groups()
+        prefix = groups[0]  # e.g., "qwen_regular", "llama31_adaptive" 
+        llm_model = groups[1]  # e.g., "QWEN", "LLAMA3.1"
+        
+        # Determine if it's adaptive or regular from prefix
+        if 'adaptive' in prefix:
+            adaptive_type = 'adaptive'
+        elif 'regular' in prefix:
+            adaptive_type = 'regular'
+        else:
+            adaptive_type = None
+            
         return {
-            'adaptive_type': groups[0],
-            'llm_model': groups[1],
+            'adaptive_type': adaptive_type,
+            'llm_model': llm_model,
             'llm_layers': int(groups[2]),
             'granularity': groups[3],
             'features': groups[4],
@@ -38,9 +51,9 @@ def parse_model_id(model_id):
             'num_tokens': int(groups[9]),
         }
     
-    # Try regular pattern: {llm_model}_L{layers}...
-    regular_pattern = re.compile(r'(.+?)_L(\d+)_(.+?)_([A-Z]+)_seq(\d+)_pred(\d+)_p(\d+)_s(\d+)_v(\d+)')
-    match = regular_pattern.match(model_id)
+    # Fallback: try without prefix (original format)
+    fallback_pattern = re.compile(r'([A-Z0-9.]+)_L(\d+)_(.+?)_([A-Z]+)_seq(\d+)_pred(\d+)_p(\d+)_s(\d+)_v(\d+)')
+    match = fallback_pattern.match(model_id)
     
     if match:
         groups = match.groups()
