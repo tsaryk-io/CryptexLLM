@@ -362,7 +362,7 @@ def main():
         df = pd.read_csv(args.filename, header=0)
         print(f"Loaded dataset with {len(df)} rows and {len(df.columns)} columns")
     except Exception as e:
-        print(f'❌ Error reading {args.filename}: {e}', file=sys.stderr)
+        print(f'Error reading {args.filename}: {e}', file=sys.stderr)
         sys.exit(1)
     
     # Clean column names
@@ -371,7 +371,7 @@ def main():
     # Handle timestamp/date column
     date_col = next((c for c in df.columns if 'date' in c or 'time' in c), None)
     if not date_col:
-        print('❌ No date/time column found.', file=sys.stderr)
+        print('No date/time column found.', file=sys.stderr)
         sys.exit(1)
     
     # Parse dates
@@ -382,7 +382,7 @@ def main():
         else:
             df['dt'] = pd.to_datetime(col, errors='raise')
     except Exception as e:
-        print(f'❌ Could not parse {date_col}: {e}', file=sys.stderr)
+        print(f'Could not parse {date_col}: {e}', file=sys.stderr)
         sys.exit(1)
     
     df.set_index('dt', inplace=True)
@@ -391,17 +391,17 @@ def main():
     required_cols = ['open', 'high', 'low', 'close']
     for col in required_cols:
         if col not in df.columns:
-            print(f'❌ Missing required column: {col}', file=sys.stderr)
+            print(f'Missing required column: {col}', file=sys.stderr)
             sys.exit(1)
     
     # Check for prediction column
     pred_col = args.prediction_col.lower()
     if pred_col not in df.columns:
-        print(f'❌ Prediction column {pred_col} not found.', file=sys.stderr)
+        print(f'Prediction column {pred_col} not found.', file=sys.stderr)
         print(f'Available columns: {list(df.columns)}')
         sys.exit(1)
     
-    print(f"✅ Using prediction column: {pred_col}")
+    print(f"Using prediction column: {pred_col}")
     
     # Fill NaN values in prediction column
     df[pred_col] = df[pred_col].fillna(method='ffill').fillna(method='bfill')
@@ -419,7 +419,7 @@ def main():
         'Hybrid': lambda df: strat_hybrid_enhanced(df, pred_col),
     }
     
-    print(f"\n🚀 Running backtest on {len(df)} data points...")
+    print(f"\nRunning backtest on {len(df)} data points...")
     print(f"Initial capital: ${args.initial_capital}")
     print(f"Trading fee: {args.fee*100:.2f}%")
     print(f"Signal threshold: {args.change*100:.2f}%")
@@ -440,9 +440,9 @@ def main():
             results.append(metrics)
             equity_curves[name] = equity
             trades_map[name] = trades
-            print(f"✅ {name}: {len(trades)} trades, {metrics['Total Return']:.2%} return")
+            print(f"{name}: {len(trades)} trades, {metrics['Total Return']:.2%} return")
         except Exception as e:
-            print(f"❌ Error running {name}: {e}")
+            print(f"Error running {name}: {e}")
     
     # Add benchmark to results
     benchmark_metrics['Strategy'] = 'Buy & Hold'
@@ -451,7 +451,7 @@ def main():
     # Create results summary
     summary = pd.DataFrame(results).set_index('Strategy')
     
-    print('\n📊 Strategy Performance Summary:')
+    print('\nStrategy Performance Summary:')
     print('=' * 80)
     print(summary.to_string(float_format='{:.4f}'.format))
     
@@ -459,7 +459,7 @@ def main():
     strategy_names = [r['Strategy'] for r in results[:-1]]  # Exclude benchmark
     best_strategy = summary.loc[strategy_names, 'Total Return'].idxmax()
     
-    print(f'\n🏆 Best Strategy: {best_strategy}')
+    print(f'\nBest Strategy: {best_strategy}')
     print(f'   Total Return: {summary.loc[best_strategy, "Total Return"]:.2%}')
     print(f'   Sharpe Ratio: {summary.loc[best_strategy, "Sharpe Ratio"]:.3f}')
     print(f'   Max Drawdown: {summary.loc[best_strategy, "Max Drawdown"]:.2%}')
@@ -470,7 +470,7 @@ def main():
     # Save detailed results
     output_file = os.path.join(args.output_dir, f'backtest_results_{os.path.basename(args.filename)}.csv')
     summary.to_csv(output_file)
-    print(f'\n💾 Results saved to: {output_file}')
+    print(f'\nResults saved to: {output_file}')
     
     # Create enhanced visualization
     try:
@@ -479,13 +479,13 @@ def main():
         
         plot_file = os.path.join(args.output_dir, f'backtest_plot_{os.path.basename(args.filename)}.html')
         fig.write_html(plot_file)
-        print(f'📈 Interactive plot saved to: {plot_file}')
+        print(f'Interactive plot saved to: {plot_file}')
         
         # Show plot if running interactively
         fig.show()
         
     except Exception as e:
-        print(f"⚠️  Could not create plot: {e}")
+        print(f"Could not create plot: {e}")
 
 if __name__ == '__main__':
     main()
